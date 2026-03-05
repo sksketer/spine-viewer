@@ -1,4 +1,4 @@
-import { ResolvedSpineAssets } from "./interfaces/AssetsInterfaces";
+import { ResolvedSpineAssets } from "../interfaces/AssetsInterfaces";
 
 export class SpineUploadManager {
   private files: File[];
