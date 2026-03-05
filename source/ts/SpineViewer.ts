@@ -18,6 +18,7 @@ export class SpineViewer {
     // Clear previous Spine if exists
     if (this.spine) {
       this.app.stage.removeChild(this.spine);
+      //@ts-ignore
       this.spine.destroy({ children: true, texture: true, baseTexture: true });
       this.spine = undefined;
     }
@@ -57,20 +58,20 @@ export class SpineViewer {
     // Create Spine instance
     this.spine = new Spine(skeletonData);
 
-    // // Center spine on screen
-    // this.spine.x = this.app.screen.width / 2;
-    // this.spine.y = this.app.screen.height;
+    // Center spine on screen
+    this.spine.x = this.app.screen.width / 2;
+    this.spine.y = this.app.screen.height;
 
-    // // Optional scaling
-    // this.spine.scale.set(0.5);
+    // Optional scaling
+    this.spine.scale.set(0.5);
 
     this.app.stage.addChild(this.spine);
 
-    // // Auto-play first animation
-    // const animations = this.spine.skeleton.data.animations;
-    // if (animations.length > 0) {
-    //   this.playAnimation(animations[0].name, true);
-    // }
+    // Auto-play first animation
+    const animations = this.spine.skeleton.data.animations;
+    if (animations.length > 0) {
+      this.playAnimation(animations[0].name, true);
+    }
   }
 
   // -------------------------------
@@ -107,6 +108,7 @@ export class SpineViewer {
   destroy() {
     if (!this.spine) return;
     this.app.stage.removeChild(this.spine);
+    //@ts-ignore
     this.spine.destroy({ children: true, texture: true, baseTexture: true });
     this.spine = undefined;
   }
