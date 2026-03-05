@@ -1,8 +1,12 @@
+import { SpineViewer } from "../SpineViewer";
 import { SpineUploadManager } from "./SpineUploadManager";
 
 export class HandleFiles {
 
-  constructor() {
+  private readonly spineViewer: SpineViewer;
+
+  constructor(spineViewer: SpineViewer) {
+    this.spineViewer = spineViewer;
     this.bindEvents();
   }
 
@@ -22,6 +26,8 @@ export class HandleFiles {
       console.log("Skeleton:", assets.skeleton);
       console.log("Atlas:", assets.atlas);
       console.log("Textures:", assets.textures);
+
+      this.spineViewer.loadAssets(assets);
     } catch (err) {
       console.error(err);
     }

@@ -1,7 +1,7 @@
 import { ResolvedSpineAssets } from "../interfaces/AssetsInterfaces";
 
 export class SpineUploadManager {
-  private files: File[];
+  private readonly files: File[];
 
   constructor(files: File[]) {
     this.files = files;
@@ -35,11 +35,12 @@ export class SpineUploadManager {
       },
       atlas: {
         file: atlasFile,
-        url: URL.createObjectURL(atlasFile),
+        url: URL.createObjectURL(atlasFile)
       },
       textures: uploadedTextures.map((file) => ({
         file,
         url: URL.createObjectURL(file),
+        type: uploadedTextures[0].name.split('.')[1]
       })),
     };
   }
