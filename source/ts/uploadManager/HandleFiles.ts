@@ -28,6 +28,8 @@ export class HandleFiles {
       console.log("Textures:", assets.textures);
 
       this.spineViewer.loadAssets(assets);
+
+      dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: assets }));
     } catch (err) {
       console.error(err);
     }
