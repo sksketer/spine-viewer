@@ -27,9 +27,10 @@ export class HandleFiles {
       console.log("Atlas:", assets.atlas);
       console.log("Textures:", assets.textures);
 
-      this.spineViewer.loadAssets(assets);
+      await this.spineViewer.loadAssets(assets);
+      const spineSkeletonData = await this.spineViewer.createSkeletonData();
 
-      dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: assets }));
+      dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: spineSkeletonData }));
     } catch (err) {
       console.error(err);
     }
