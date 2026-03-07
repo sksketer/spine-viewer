@@ -17,7 +17,7 @@ export class SpineViewerSpin extends Spine {
     this.setParent(spineData?.parentContainer ?? (globalThis as any).__PIXI_APP__.stage);
   }
 
-  playAnimation(name: string, loop = true) {
+  playAnimation(name: string, loop = false) {
     if (!this) return;
     this.state.setAnimation(0, name, loop);
   }

@@ -50,6 +50,37 @@ body {
   background-color: #367c38;
 }
 
+.spineStage {
+  display: none;
+  justify-content: space-between;
+}
+
+.controller {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+}
+
+.controller * {
+  padding: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.controller>* {
+  text-transform: uppercase;
+}
+
+#spineName {
+  text-align: center;
+}
+
+#stage {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
 /* Footer */
 #footer {
   text-align: center;

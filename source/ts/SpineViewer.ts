@@ -1,4 +1,3 @@
-// SpineViewer.ts
 import { Assets } from "pixi.js";
 import { TextureAtlas, AtlasAttachmentLoader, SkeletonJson, SpineTexture, SkeletonData } from "@esotericsoftware/spine-pixi-v8";
 import type { ResolvedSpineAssets } from "./interfaces/AssetsInterfaces";

@@ -7,15 +7,16 @@ import { SpineViewer } from "./SpineViewer";
 import { HandleFiles } from "./uploadManager/HandleFiles";
 import { SpineViewerSpin } from "./UI/SpineViewerSpin";
 import { SkeletonData, SpineOptions } from "@esotericsoftware/spine-pixi-v8";
+import { SpineController } from "./SpineController";
 
 let isFirstLoad = false;
 
 (async () => {
   const app = new Application();
   (globalThis as any).__PIXI_APP__ = app;
-  await app.init({ background: '#1099bb', width: 1280, height: 720 });
-  document.body.appendChild(app.canvas);
-  app.canvas.style.display = "none";
+  const height = innerHeight - (document.getElementById("footer")?.clientHeight ?? 0);
+  await app.init({ background: '#1099bb', width: 1280, height: height });
+  document.getElementById("stage")?.appendChild(app.canvas);
 
   const spineViewer = new SpineViewer();
 
@@ -29,15 +30,22 @@ addEventListener("spineAssetsLoaded", (e: Event) => {
 
 const hideFirstLoadData = () => {
   isFirstLoad = true;
-  const canvas = document.body.getElementsByTagName('canvas')[0];
-  canvas.style.display = "block";
 
-  const mainContainer: any = document.getElementsByClassName("main-container")[0];
-  mainContainer.style.display = "none";
+  const uploadContainer: any = document.getElementsByClassName("upload-container")[0];
+  uploadContainer.style.display = "none";
+
+  const spineStage: any = document.getElementsByClassName("spineStage")[0];
+  spineStage.style.display = "flex";
+  const stage: any = document.getElementById("stage");
+  stage.style.width = innerWidth / 2;
+  stage.style.height = innerHeight;
 };
 
 const createSpine = (skeletonData: SpineOptions | SkeletonData) => {
   const spine = new SpineViewerSpin({ skeletonData });
-  spine.setPosition(640, 360);
+  const parentWidth = (document.getElementsByTagName('canvas')[0] as any).width ?? 0;
+  const parentHeight = innerHeight ?? 0;
+  spine.setPosition(parentWidth / 2, parentHeight / 2);
+  new SpineController(spine, spine.skeleton.data.animations.map((a) => a.name));
   console.log("Spine Name:", spine.label);
 };
