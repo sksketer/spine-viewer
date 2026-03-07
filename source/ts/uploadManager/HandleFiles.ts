@@ -1,12 +1,12 @@
-import { SpineViewer } from "../SpineViewer";
+import { Utils } from "../utils";
 import { SpineUploadManager } from "./SpineUploadManager";
 
 export class HandleFiles {
 
-  private readonly spineViewer: SpineViewer;
+  private readonly utils: Utils;
 
-  constructor(spineViewer: SpineViewer) {
-    this.spineViewer = spineViewer;
+  constructor(utils: Utils) {
+    this.utils = utils;
     this.bindEvents();
   }
 
@@ -27,8 +27,8 @@ export class HandleFiles {
       console.log("Atlas:", assets.atlas);
       console.log("Textures:", assets.textures);
 
-      await this.spineViewer.loadAssets(assets);
-      const spineSkeletonData = await this.spineViewer.createSkeletonData();
+      await this.utils.loadAssets(assets);
+      const spineSkeletonData = await this.utils.createSkeletonData();
 
       dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: spineSkeletonData }));
     } catch (err) {

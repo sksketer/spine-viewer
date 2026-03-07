@@ -2,7 +2,7 @@ import { Assets } from "pixi.js";
 import { TextureAtlas, AtlasAttachmentLoader, SkeletonJson, SpineTexture, SkeletonData } from "@esotericsoftware/spine-pixi-v8";
 import type { ResolvedSpineAssets } from "./interfaces/AssetsInterfaces";
 
-export class SpineViewer {
+export class Utils {
   /**
    * Load uploaded Spine assets into Pixi and create a Spine instance
    */

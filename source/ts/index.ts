@@ -1,7 +1,7 @@
 /** ------------------------------------------ */
 console.log("setup ready!");
 import { Application } from "pixi.js";
-import { SpineViewer } from "./SpineViewer";
+import { Utils } from "./utils";
 /** ------------------------------------------ */
 
 import { HandleFiles } from "./uploadManager/HandleFiles";
@@ -18,9 +18,9 @@ let isFirstLoad = false;
   await app.init({ background: '#1099bb', width: 1280, height: height });
   document.getElementById("stage")?.appendChild(app.canvas);
 
-  const spineViewer = new SpineViewer();
+  const utils = new Utils();
 
-  const loadedFilesData = new HandleFiles(spineViewer);
+  new HandleFiles(utils);
 })();
 
 addEventListener("spineAssetsLoaded", (e: Event) => {
