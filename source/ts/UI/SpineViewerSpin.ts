@@ -4,6 +4,7 @@ import { Container } from "pixi.js";
 export interface ISpineData {
   x?: number;
   y?: number;
+  label?: string;
   scale?: number;
   skeletonData: SpineOptions | SkeletonData;
   parentContainer?: Container;
@@ -15,6 +16,7 @@ export class SpineViewerSpin extends Spine {
     this.setPosition(spineData?.x ?? 0, spineData?.y ?? 0);
     this.setScale(spineData?.scale ?? 1);
     this.setParent(spineData?.parentContainer ?? (globalThis as any).__PIXI_APP__.stage);
+    this.label = spineData.label ?? "Unnamed Spine";
   }
 
   playAnimation(name: string, loop = false) {

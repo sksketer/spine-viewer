@@ -30,7 +30,9 @@ export class HandleFiles {
       await this.utils.loadAssets(assets);
       const spineSkeletonData = await this.utils.createSkeletonData();
 
-      dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: spineSkeletonData }));
+      const fileName = assets.skeleton.file.name.split('.')[0].replaceAll('_', " ");
+
+      dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: { label: fileName, skeletonData: spineSkeletonData } }));
     } catch (err) {
       console.error(err);
     }

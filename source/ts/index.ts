@@ -1,12 +1,11 @@
 /** ------------------------------------------ */
 console.log("setup ready!");
-import { Application } from "pixi.js";
-import { Utils } from "./utils";
 /** ------------------------------------------ */
 
+import { Application } from "pixi.js";
+import { Utils } from "./utils";
 import { HandleFiles } from "./uploadManager/HandleFiles";
-import { SpineViewerSpin } from "./UI/SpineViewerSpin";
-import { SkeletonData, SpineOptions } from "@esotericsoftware/spine-pixi-v8";
+import { ISpineData, SpineViewerSpin } from "./UI/SpineViewerSpin";
 import { SpineController } from "./SpineController";
 
 let isFirstLoad = false;
@@ -41,8 +40,8 @@ const hideFirstLoadData = () => {
   stage.style.height = innerHeight;
 };
 
-const createSpine = (skeletonData: SpineOptions | SkeletonData) => {
-  const spine = new SpineViewerSpin({ skeletonData });
+const createSpine = (spineData: ISpineData) => {
+  const spine = new SpineViewerSpin(spineData);
   const parentWidth = (document.getElementsByTagName('canvas')[0] as any).width ?? 0;
   const parentHeight = innerHeight ?? 0;
   spine.setPosition(parentWidth / 2, parentHeight / 2);
