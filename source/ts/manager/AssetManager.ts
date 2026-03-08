@@ -1,12 +1,45 @@
 import { Assets } from "pixi.js";
 import { TextureAtlas, AtlasAttachmentLoader, SkeletonJson, SpineTexture, SkeletonData } from "@esotericsoftware/spine-pixi-v8";
-import type { ResolvedSpineAssets } from "./interfaces/AssetsInterfaces";
+import type { ResolvedSpineAssets } from "../interfaces/AssetsInterfaces";
+import { SpineUploadManager } from "./SpineUploadManager";
 
-export class Utils {
+export class AssetManager {
+
+  constructor() {
+    this.bindEvents();
+  }
+
+  protected bindEvents() {
+    const input = document.querySelector("#spineUpload") as unknown as HTMLInputElement;
+
+    input.addEventListener("change", this.onFileSelected.bind(this, input));
+  }
+
+  async onFileSelected(input: HTMLInputElement): Promise<void> {
+    const files = Array.from(input.files || []);
+
+    try {
+      const manager = new SpineUploadManager(files);
+      const assets = await manager.resolve();
+
+      console.log("Skeleton:", assets.skeleton);
+      console.log("Atlas:", assets.atlas);
+      console.log("Textures:", assets.textures);
+
+      await this.loadSpineAssets(assets);
+      const spineSkeletonData = await this.createSkeletonData();
+
+      const fileName = assets.skeleton.file.name.split('.')[0].replaceAll('_', " ");
+
+      dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: { label: fileName, skeletonData: spineSkeletonData } }));
+    } catch (err) {
+      console.error(err);
+    }
+  }
   /**
    * Load uploaded Spine assets into Pixi and create a Spine instance
    */
-  async loadAssets(assets: ResolvedSpineAssets): Promise<void> {
+  async loadSpineAssets(assets: ResolvedSpineAssets): Promise<void> {
     // Register skeleton and atlas
     Assets.add({ alias: "skeleton", src: assets.skeleton.url, parser: assets.skeleton.type });
     Assets.add({ alias: "atlas", src: assets.atlas.url, parser: "text" });

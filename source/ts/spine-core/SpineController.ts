@@ -1,11 +1,11 @@
-import { SpineViewerSpin } from "./UI/SpineViewerSpin";
+import { SVSpine } from "./SVSpine";
 
 export class SpineController {
-  private readonly spine: SpineViewerSpin;
+  private readonly spine: SVSpine;
   private readonly animationNames: Array<string>;
   private isLooping: boolean | undefined = undefined;
 
-  constructor(spine: SpineViewerSpin, animationName: Array<string>) {
+  constructor(spine: SVSpine, animationName: Array<string>) {
     this.spine = spine;
     this.animationNames = animationName;
     this.init();

@@ -84,10 +84,10 @@ export class SpineUploadManager {
   }
 
   private validateTextures(required: string[], uploaded: File[]) {
-    const uploadedNames = uploaded.map((f) => f.name);
+    const uploadedNames = new Set(uploaded.map((f) => f.name));
 
     const missing = required.filter(
-      (name) => !uploadedNames.includes(name)
+      (name) => !uploadedNames.has(name)
     );
 
     if (missing.length > 0) {
