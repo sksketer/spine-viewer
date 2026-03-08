@@ -12,7 +12,7 @@ declare global {
 }
 
 const stageDIV = (document.getElementById("stage") ?? document.body);
-const stage = new SpineViewer(stageDIV, { width: 1280, height: innerHeight });
+const stage = new SpineViewer(stageDIV, { width: 1280, height: innerHeight - (document.getElementById("footer")?.clientHeight ?? 0) });
 new UIManager();
 
 (async () => {
