@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS-Template</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+  <div class="main-container">
+    <div class="upload-container">
+      <input type="file" id="spineUpload" multiple />
+    </div>
+
+    <div class="spineStage">
+      <div class="controllerDiv">
+        <div id="spineController">
+          <div id="spineName"></div>
+          <div id="animationNameDIV">
+            <label for="animationSelect">Animations</label>
+          </div>
+          <div id="loopDIV">
+            <label for="loopCheckbox">Loop</label>
+            <input type="checkbox" id="loopCheckbox" name="loopCheckbox">
+          </div>
+          <div id="positionDIV">
+            <label for="positionDIV">Position</label>
+            <div>
+              <label for="xPos">X:</label>
+              <input type="number" id="xPos" name="xPos" value="0">
+              <label for="yPos">Y:</label>
+              <input type="number" id="yPos" name="yPos" value="0">
+            </div>
+          </div>
+          <div id="scaleDIV">
+            <label for="scale">Scale</label>
+            <div>
+              <label for="scaleX">X:</label>
+              <input type="number" id="scaleX" name="scaleX" value="1" step="0.1">
+              <label for="scaleY">Y:</label>
+              <input type="number" id="scaleY" name="scaleY" value="1" step="0.1">
+            </div>
+          </div>
+        </div>
+        <div id="stageController">
+          <div id="canvasDiv">
+            <label for="canvasDiv">Canvas</label>
+            <div>
+              <label for="canvasWidth">Width:</label>
+              <input type="number" id="canvasWidth" name="canvasWidth" value="800">
+              <label for="canvasHeight">Height:</label>
+              <input type="number" id="canvasHeight" name="canvasHeight" value="600">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="stage"></div>
+    </div>
+
+    <footer id="footer">@copyright 2025 sketer. All rights reserved.</footer>
+  </div>
+  <script src="./js/index.js"></script>
+
+</body>
+
+</html>
