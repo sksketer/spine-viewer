@@ -55,19 +55,19 @@ body {
   justify-content: space-between;
 }
 
-.controller {
+#spineController {
   display: flex;
   flex-direction: column;
   padding: 22px;
 }
 
-.controller * {
+#spineController * {
   padding: 8px;
   font-weight: bold;
   text-transform: uppercase;
 }
 
-.controller>* {
+#spineController>* {
   text-transform: uppercase;
 }
 
