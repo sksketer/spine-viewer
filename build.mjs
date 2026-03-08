@@ -23,7 +23,7 @@ const config = {
   platform: "browser",
   target: "es2022",
   format: "esm",
-  outfile: "public/js/index.js",
+  outfile: "docs/js/index.js",
   sourcemap: true,
   plugins: [
     copy({
@@ -31,15 +31,15 @@ const config = {
       assets: [
         {
           from: ["source/index.html"],
-          to: ["public"]
+          to: ["docs"]
         },
         {
           from: ["source/css/**/*"],
-          to: ["public/css"]
+          to: ["docs/css"]
         },
         {
           from: ["source/assets/**/*"],
-          to: ["public/assets"]
+          to: ["docs/assets"]
         }
       ],
       watch: isWatch
