@@ -57346,6 +57346,7 @@ var SpineViewer = class {
     this.scene = new Container();
     this.scene.label = "Main Scene";
     this.stage?.stage.addChild(this.scene);
+    dispatchEvent(new CustomEvent("SCENE_READY", { detail: { canvasWidth: this.stage.canvas.width, canvasHeight: this.stage.canvas.height } }));
   }
   async getStage() {
     if (!this.stage) {
@@ -57510,12 +57511,34 @@ var AssetManager = class {
 // source/ts/manager/UIManager.ts
 var UIManager = class {
   isFirstLoad = false;
+  canvasWidthInput;
+  canvasHeightInput;
   constructor() {
     this.bindEvents();
+    this.initializeElements();
+  }
+  initializeElements() {
+    this.canvasWidthInput = document.getElementById("canvasWidth");
+    this.canvasHeightInput = document.getElementById("canvasHeight");
   }
   bindEvents() {
     addEventListener("spineAssetsLoaded", (e2) => {
       !this.isFirstLoad && this.hideFirstLoadData();
+    });
+    addEventListener("SCENE_READY", (e2) => {
+      const { canvasWidth, canvasHeight } = e2.detail;
+      this.canvasWidthInput.value = canvasWidth;
+      this.canvasHeightInput.value = canvasHeight;
+      this.canvasWidthInput.addEventListener("change", (e3) => {
+        const target = e3.target;
+        const canvas = spineViewer.stage.canvas;
+        canvas.style.width = `${Number.parseInt(target.value)}px`;
+      });
+      this.canvasHeightInput.addEventListener("change", (e3) => {
+        const target = e3.target;
+        const canvas = spineViewer.stage.canvas;
+        canvas.style.height = `${Number.parseInt(target.value)}px`;
+      });
     });
   }
   hideFirstLoadData() {
@@ -57530,16 +57553,36 @@ var UIManager = class {
   }
 };
 
+// source/ts/model/Model.ts
+var Model = class {
+  canvasDimension = {
+    width: innerWidth * 0.75,
+    height: innerHeight - (document.getElementById("footer")?.clientHeight ?? 0)
+  };
+  setCanvasDimension(newDimension) {
+    this.canvasDimension.width = newDimension.width;
+    this.canvasDimension.height = newDimension.height;
+  }
+  getCanvasDimension() {
+    return this.canvasDimension;
+  }
+};
+
 // source/ts/index.ts
 console.log("setup ready!");
 var stageDIV = document.getElementById("stage") ?? document.body;
-var stage = new SpineViewer(stageDIV, { width: 1280, height: innerHeight - (document.getElementById("footer")?.clientHeight ?? 0) });
+var model = new Model();
+var stage = new SpineViewer(stageDIV, {
+  width: model.getCanvasDimension().width,
+  height: model.getCanvasDimension().height
+});
 new UIManager();
 (async () => {
   globalThis.spineViewer = {
     stage: await stage.getStage(),
     spineData: [],
-    assetsManager: new AssetManager()
+    assetsManager: new AssetManager(),
+    model
   };
 })();
 /*! Bundled license information:
