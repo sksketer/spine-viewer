@@ -39,6 +39,7 @@ export class SpineViewer {
     this.scene = new Container();
     this.scene.label = "Main Scene";
     this.stage?.stage.addChild(this.scene);
+    dispatchEvent(new CustomEvent("SCENE_READY", {}));
   }
 
   async getStage(): Promise<Application | undefined> {

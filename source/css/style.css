@@ -55,16 +55,25 @@ body {
   justify-content: space-between;
 }
 
+.controllerDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px;
+}
+
+.controllerDiv * {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 #spineController {
   display: flex;
   flex-direction: column;
-  padding: 22px;
 }
 
 #spineController * {
   padding: 8px;
-  font-weight: bold;
-  text-transform: uppercase;
 }
 
 #spineController>* {
@@ -79,6 +88,10 @@ body {
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
+}
+
+#canvasDiv * {
+  padding: 8px;
 }
 
 /* Footer */
