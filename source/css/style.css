@@ -110,9 +110,52 @@ body {
   margin-left: 5px;
 }
 
+.form-row label,
+legend {
+  color: white;
+  /* -webkit-text-stroke: 1px black; */
+
+  /* fallback */
+  text-shadow:
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
+
+  font-weight: bolder;
+}
+
 .form-row input {
   padding: 2px;
   width: 75px;
+}
+
+.form-row input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  padding: 0;
+  border: none;
+  width: 40px;
+  height: 40px;
+  background: none;
+  cursor: pointer;
+}
+
+/* Remove inner padding in Chrome */
+.form-row input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+/* Remove white border inside */
+.form-row input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
+/* Firefox fix */
+.form-row input[type="color"]::-moz-color-swatch {
+  border: none;
 }
 
 #stage {

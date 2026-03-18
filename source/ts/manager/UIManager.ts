@@ -48,8 +48,8 @@ export class UIManager {
           stage.renderer.background.color = color;
         }
       });
+      this.canvasColor.value = '#1099bb';
     });
-
     this.canvasSettingBtn.addEventListener("click", () => {
       const isOpen = this.canvasController.classList.toggle("is-open");
       this.canvasSettingBtn.classList.toggle("fa-cog", !isOpen);
