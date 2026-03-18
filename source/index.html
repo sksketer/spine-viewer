@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TS-Template</title>
+  <title>Spine-Viewer</title>
   <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -44,19 +45,28 @@
             </div>
           </div>
         </div>
-        <div id="stageController">
-          <div id="canvasDiv">
-            <label for="canvasDiv">Canvas</label>
-            <div>
-              <label for="canvasWidth">Width:</label>
-              <input type="number" id="canvasWidth" name="canvasWidth" value="1280">
-              <label for="canvasHeight">Height:</label>
-              <input type="number" id="canvasHeight" name="canvasHeight" value="720">
-            </div>
-          </div>
-        </div>
       </div>
       <div id="stage"></div>
+    </div>
+    <div class="canvasSetting">
+      <div class="canvasController">
+        <fieldset id="canvasDiv">
+          <legend>Canvas</legend>
+
+          <div class="form-row">
+            <label for="canvasWidth">Width:</label>
+            <input type="number" id="canvasWidth" name="canvasWidth" value="1280">
+
+            <label for="canvasHeight">Height:</label>
+            <input type="number" id="canvasHeight" name="canvasHeight" value="720">
+
+            <label for="canvasColor">Color:</label>
+            <input type="color" id="canvasColor" name="canvasColor" value="#ffffff">
+          </div>
+
+        </fieldset>
+      </div>
+      <i class="canvasSettingBtn fa fa-cog fa-2x" aria-hidden="true"></i>
     </div>
 
     <footer id="footer">@copyright 2025 sketer. All rights reserved.</footer>

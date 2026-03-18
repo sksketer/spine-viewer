@@ -2,22 +2,30 @@ export class UIManager {
   private isFirstLoad = false;
   private canvasWidth: HTMLInputElement;
   private canvasHeight: HTMLInputElement;
+  private canvasSettingBtn: HTMLElement;
+  private canvasController: HTMLDivElement;
 
   constructor() {
-    this.bindEvents();
     this.initializeElements();
+    this.bindEvents();
   }
 
   initializeElements(): void {
-    this.canvasWidth = document.getElementById("canvasWidth") as HTMLInputElement;
-    this.canvasHeight = document.getElementById("canvasHeight") as HTMLInputElement;
+    this.canvasSettingBtn = document.getElementsByClassName("canvasSettingBtn")[0] as HTMLElement;
+    this.canvasController = document.getElementsByClassName("canvasController")[0] as HTMLDivElement;
+    this.canvasController.classList.remove("is-open");
+    this.canvasSettingBtn.classList.remove("fa-times-circle");
+    this.canvasSettingBtn.classList.add("fa-cog");
   }
 
   bindEvents(): void {
     addEventListener("spineAssetsLoaded", (e: Event) => {
       !this.isFirstLoad && this.hideFirstLoadData();
     });
+
     addEventListener("SCENE_READY", () => {
+      this.canvasWidth = document.getElementById("canvasWidth") as HTMLInputElement;
+      this.canvasHeight = document.getElementById("canvasHeight") as HTMLInputElement;
       this.canvasWidth.addEventListener("change", (e) => {
         const target = e.target as HTMLInputElement;
         const width = Number.parseInt(target.value);
@@ -30,6 +38,12 @@ export class UIManager {
         const canvas: any = spineViewer.stage.canvas;
         canvas.style.height = `${height}px`;
       });
+    });
+
+    this.canvasSettingBtn.addEventListener("click", () => {
+      const isOpen = this.canvasController.classList.toggle("is-open");
+      this.canvasSettingBtn.classList.toggle("fa-cog", !isOpen);
+      this.canvasSettingBtn.classList.toggle("fa-times-circle", isOpen);
     });
   }
 
