@@ -2,6 +2,7 @@ export class UIManager {
   private isFirstLoad = false;
   private canvasWidth: HTMLInputElement;
   private canvasHeight: HTMLInputElement;
+  private canvasColor: HTMLInputElement;
   private canvasSettingBtn: HTMLElement;
   private canvasController: HTMLDivElement;
 
@@ -26,6 +27,7 @@ export class UIManager {
     addEventListener("SCENE_READY", () => {
       this.canvasWidth = document.getElementById("canvasWidth") as HTMLInputElement;
       this.canvasHeight = document.getElementById("canvasHeight") as HTMLInputElement;
+      this.canvasColor = document.getElementById("canvasColor") as HTMLInputElement;
       this.canvasWidth.addEventListener("change", (e) => {
         const target = e.target as HTMLInputElement;
         const width = Number.parseInt(target.value);
@@ -37,6 +39,14 @@ export class UIManager {
         const height = Number.parseInt(target.value);
         const canvas: any = spineViewer.stage.canvas;
         canvas.style.height = `${height}px`;
+      });
+      this.canvasColor.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement;
+        const color = Number.parseInt(target.value.replace("#", ""), 16);
+        const stage: any = spineViewer.stage;
+        if (stage?.renderer?.background) {
+          stage.renderer.background.color = color;
+        }
       });
     });
 
