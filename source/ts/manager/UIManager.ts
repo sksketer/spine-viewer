@@ -1,5 +1,7 @@
 export class UIManager {
   private isFirstLoad = false;
+  private autoCloseTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private readonly autoCloseDelayMs = 10000;
   private canvasWidth: HTMLInputElement;
   private canvasHeight: HTMLInputElement;
   private canvasColor: HTMLInputElement;
@@ -54,7 +56,41 @@ export class UIManager {
       const isOpen = this.canvasController.classList.toggle("is-open");
       this.canvasSettingBtn.classList.toggle("fa-cog", !isOpen);
       this.canvasSettingBtn.classList.toggle("fa-times-circle", isOpen);
+      if (isOpen) {
+        this.scheduleCanvasAutoClose();
+      } else {
+        this.clearCanvasAutoCloseTimer();
+      }
     });
+
+    ["mousedown", "mousemove", "keydown", "input", "touchstart"].forEach((eventName) => {
+      this.canvasController.addEventListener(eventName, () => {
+        if (this.canvasController.classList.contains("is-open")) {
+          this.scheduleCanvasAutoClose();
+        }
+      });
+    });
+  }
+
+  private scheduleCanvasAutoClose(): void {
+    this.clearCanvasAutoCloseTimer();
+    this.autoCloseTimeoutId = globalThis.setTimeout(() => {
+      this.closeCanvasController();
+    }, this.autoCloseDelayMs);
+  }
+
+  private clearCanvasAutoCloseTimer(): void {
+    if (this.autoCloseTimeoutId !== null) {
+      globalThis.clearTimeout(this.autoCloseTimeoutId);
+      this.autoCloseTimeoutId = null;
+    }
+  }
+
+  private closeCanvasController(): void {
+    this.canvasController.classList.remove("is-open");
+    this.canvasSettingBtn.classList.remove("fa-times-circle");
+    this.canvasSettingBtn.classList.add("fa-cog");
+    this.clearCanvasAutoCloseTimer();
   }
 
   hideFirstLoadData(): void {
