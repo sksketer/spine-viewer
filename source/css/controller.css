@@ -20,6 +20,15 @@
   letter-spacing: 0.2px;
 }
 
+#versionHolder {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  letter-spacing: 0.3px;
+}
+
 .controllerMainDiv>div:not(#spineNameHolder) {
   display: flex;
   align-items: center;

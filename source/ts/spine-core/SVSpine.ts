@@ -12,10 +12,18 @@ export interface ISVSpineData {
 }
 
 export class SVSpine extends Spine {
+
+  private readonly _version: string;
+
   constructor(spineData: ISVSpineData) {
     super(spineData.skeletonData);
+    this._version = (spineData.skeletonData as SkeletonData).version;
     this.updateProperties(spineData);
     this.initializeController();
+  }
+
+  get version(): string {
+    return this._version;
   }
 
   updateProperties(spineData: ISVSpineData): void {

@@ -14,7 +14,7 @@ export class SpineController {
 
   public async init(): Promise<void> {
     this.isLooping = false;
-    this.uiCreator = new ControllerUI(this.spine.label, this.animationNames);
+    this.uiCreator = new ControllerUI(this.spine, this.animationNames);
     await this.uiCreator.init();
     this.bindHandlers();
   }

@@ -1,5 +1,8 @@
+import { SVSpine } from "./SVSpine";
+
 export class ControllerUI {
 
+  private readonly spineRef: SVSpine;
   private readonly spineName: string;
   private readonly parentDiv: HTMLDivElement;
   private readonly animationNames: Array<string>;
@@ -13,8 +16,9 @@ export class ControllerUI {
   private xScaleInput: HTMLInputElement;
   private yScaleInput: HTMLInputElement;
 
-  constructor(spineName: string, animationNames: Array<string>, parentDiv?: HTMLDivElement | string) {
-    this.spineName = spineName;
+  constructor(spineRef: SVSpine, animationNames: Array<string>, parentDiv?: HTMLDivElement | string) {
+    this.spineRef = spineRef;
+    this.spineName = spineRef.label;
     this.animationNames = animationNames;
     if (typeof parentDiv === "string") {
       this.parentDiv = document.querySelector(parentDiv);
@@ -26,6 +30,7 @@ export class ControllerUI {
   async init(): Promise<void> {
     this.createMainDiv();
     this.nameHolder();
+    this.version();
     this.animations();
     this.looping();
     this.positions();
@@ -37,6 +42,13 @@ export class ControllerUI {
     mainDiv.classList.add("controllerMainDiv");
     this.parentDiv.appendChild(mainDiv);
     this.mainDiv = mainDiv;
+  }
+
+  version(): void {
+    const versionDiv = document.createElement('div');
+    versionDiv.id = 'versionHolder';
+    versionDiv.textContent = `Version: ${this.spineRef.version}`;
+    this.mainDiv.appendChild(versionDiv);
   }
 
   nameHolder(): void {
