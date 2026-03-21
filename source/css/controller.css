@@ -1,0 +1,70 @@
+.controllerMainDiv {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 360px);
+  padding: 14px;
+  border: 1px solid #d5dae0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #626262 0%, #1a1a1a 100%);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#spineNameHolder {
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.controllerMainDiv>div:not(#spineNameHolder) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.controllerMainDiv span {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#animationHeading {
+  min-width: 80px;
+}
+
+#animationSelect,
+#xPosition,
+#yPosition,
+#xScale,
+#yScale {
+  min-width: 85px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#animationSelect:focus,
+#xPosition:focus,
+#yPosition:focus,
+#xScale:focus,
+#yScale:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+#loopCheckbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
