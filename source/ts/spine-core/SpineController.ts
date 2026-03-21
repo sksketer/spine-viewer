@@ -1,26 +1,22 @@
 import { SVSpine } from "./SVSpine";
+import { ControllerUI } from "./ControllerUI";
 
 export class SpineController {
   private readonly spine: SVSpine;
   private readonly animationNames: Array<string>;
   private isLooping: boolean | undefined = undefined;
+  private uiCreator: ControllerUI;
 
-  constructor(spine: SVSpine, animationName: Array<string>) {
+  constructor(spine: SVSpine) {
     this.spine = spine;
-    this.animationNames = animationName;
-    this.init();
+    this.animationNames = spine.skeleton.data.animations.map((a) => a.name);
   }
 
-  private init(): void {
+  public async init(): Promise<void> {
     this.isLooping = false;
-    this.updateSpineName();
-    this.createAnimationSelect();
+    this.uiCreator = new ControllerUI(this.spine.label, this.animationNames);
+    await this.uiCreator.init();
     this.bindHandlers();
-  }
-
-  private updateSpineName(): void {
-    const spineNameDiv = document.getElementById("spineName") as unknown as HTMLDivElement;
-    spineNameDiv.textContent = this.spine.label;
   }
 
   private bindHandlers(): void {
@@ -30,21 +26,8 @@ export class SpineController {
     this.bindScaleHandler();
   }
 
-  private createAnimationSelect(): void {
-    const animationNameDIV = document.getElementById("animationNameDIV") as unknown as HTMLDivElement;
-    const select = document.createElement("select");
-    select.id = "animationSelect";
-    this.animationNames.forEach((name) => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.text = name;
-      select.appendChild(option);
-    });
-    animationNameDIV.appendChild(select);
-  }
-
   private bindAnimationHandler() {
-    const select = document.getElementById("animationSelect") as HTMLSelectElement;
+    const select = this.uiCreator.getAnimationSelect();
     select.addEventListener("change", (e) => {
       const target = e.target as HTMLSelectElement;
       const animationName = target.value;
@@ -54,7 +37,7 @@ export class SpineController {
   }
 
   private bindLoopHandler(): void {
-    const loopButton = document.getElementById("loopCheckbox") as HTMLInputElement;
+    const loopButton = this.uiCreator.getLoopCheckbox();
     loopButton.checked = false;
     loopButton.addEventListener("change", (e) => {
       const target = e.target as HTMLInputElement;
@@ -67,17 +50,17 @@ export class SpineController {
   }
 
   private bindPositionHandler(): void {
-    const xPositionDiv = document.getElementById("xPos") as HTMLInputElement;
-    xPositionDiv.value = this.spine.x.toString();
-    xPositionDiv.addEventListener("input", (e) => {
+    const xPositionInput = this.uiCreator.getXPositionInput();
+    xPositionInput.value = this.spine.x.toString();
+    xPositionInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const x = Number.parseFloat(target.value) || 0;
       this.spine.x = x;
     });
 
-    const yPositionDiv = document.getElementById("yPos") as HTMLInputElement;
-    yPositionDiv.value = this.spine.y.toString();
-    yPositionDiv.addEventListener("input", (e) => {
+    const yPositionInput = this.uiCreator.getYPositionInput();
+    yPositionInput.value = this.spine.y.toString();
+    yPositionInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const y = Number.parseFloat(target.value) || 0;
       this.spine.y = y;
@@ -85,8 +68,10 @@ export class SpineController {
   }
 
   private bindScaleHandler(): void {
-    const scaleXInput = document.getElementById("scaleX") as HTMLInputElement;
-    const scaleYInput = document.getElementById("scaleY") as HTMLInputElement;
+    const scaleXInput = this.uiCreator.getXScaleInput();
+    const scaleYInput = this.uiCreator.getYScaleInput();
+    scaleXInput.value = this.spine.scale.x.toString();
+    scaleYInput.value = this.spine.scale.y.toString();
 
     scaleXInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;

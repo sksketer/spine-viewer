@@ -26,7 +26,8 @@ export class SVSpine extends Spine {
   }
 
   initializeController(): void {
-    new SpineController(this, this.skeleton.data.animations.map((a) => a.name));
+    const spineController = new SpineController(this);
+    spineController.init();
   }
 
   playAnimation(name: string, loop = false) {
