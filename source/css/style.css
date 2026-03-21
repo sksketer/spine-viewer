@@ -52,52 +52,13 @@ body {
 
 .spineStage {
   display: none;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .controllerDiv {
+  position: fixed;
+  margin: 10px;
   width: 250px;
-}
-
-#spineController {
-  display: none;
-}
-
-/* 
-.controllerDiv {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 22px;
-}
-
-.controllerDiv * {
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-#spineController {
-  display: flex;
-  flex-direction: column;
-}
-
-#spineController * {
-  padding: 8px;
-}
-
-#spineController>* {
-  text-transform: uppercase;
-}
-
-#spineName {
-  text-align: center;
-} */
-
-.stageController {
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between; */
-  padding: 22px;
 }
 
 #canvasDiv .form-row {
@@ -113,7 +74,6 @@ body {
 .form-row label,
 legend {
   color: white;
-  /* -webkit-text-stroke: 1px black; */
 
   /* fallback */
   text-shadow:
