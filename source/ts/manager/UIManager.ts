@@ -101,13 +101,19 @@ export class UIManager {
   hideFirstLoadData(): void {
     this.isFirstLoad = true;
 
+    // hide upload container
     const uploadContainer: any = document.getElementsByClassName("upload-container")[0];
     uploadContainer.style.display = "none";
 
+    // show spine stage and controller
     const spineStage: any = document.getElementsByClassName("spineStage")[0];
     spineStage.style.display = "flex";
+    // set canvas to half of the window width and full height
     const stage: any = document.getElementById("stage");
     stage.style.width = innerWidth / 2;
     stage.style.height = innerHeight;
+    // show spine controller on first load
+    const spinesReferences: any = document.getElementsByClassName("controllerDiv")[0];
+    spinesReferences.style.display = "block";
   }
 }

@@ -1,11 +1,8 @@
 .controllerMainDiv {
-  display: grid;
+  display: none;
   gap: 10px;
   width: min(100%, 360px);
   padding: 14px;
-  border: 1px solid #d5dae0;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #626262 0%, #1a1a1a 100%);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -84,7 +81,7 @@
   border: 1px solid #60a5fa;
   border-radius: 8px;
   background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-  color: #ffffff;
+  color: #000000;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.2px;

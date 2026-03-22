@@ -56,9 +56,53 @@ body {
 }
 
 .controllerDiv {
+  display: none;
   position: fixed;
   margin: 10px;
   width: 250px;
+
+  border: 1px solid #d5dae0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #626262 0%, #1a1a1a 100%);
+}
+
+.spinesReferences {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+}
+
+.spinesReferences select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+}
+
+.spinesReferences select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.spinesReferences span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: #38bdf8;
+  cursor: pointer;
+}
+
+.spinesReferences span:hover {
+  color: #7dd3fc;
 }
 
 #canvasDiv .form-row {
