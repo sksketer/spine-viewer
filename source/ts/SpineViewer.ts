@@ -10,6 +10,26 @@ export class SpineViewer {
   private readonly parent?: HTMLElement;
   private readonly canvasProps?: ICanvasOptions;
   private readonly spineInstances: Array<SVSpine> = [];
+  private readonly onSpineSelectorChange = (e: Event): void => {
+    const target = e.target as HTMLSelectElement;
+    const selectedSpine = this.spineInstances.find((item) => item.label === target.value);
+    if (!selectedSpine) {
+      return;
+    }
+    this.hideAllController();
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+      detail: { spine: selectedSpine, visibility: true }
+    }));
+  };
+
+  private readonly onSpineDestroyRequested = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (!detail?.spine) {
+      return;
+    }
+    this.destroySpineInstance(detail.spine);
+  };
+
   private isSpineSelectorBound = false;
   private scene: Container;
 
@@ -23,6 +43,8 @@ export class SpineViewer {
     addEventListener("spineAssetsLoaded", (e: Event) => {
       this.createSpine((e as CustomEvent).detail);
     });
+
+    addEventListener("SPINE_DESTROY_REQUESTED", this.onSpineDestroyRequested);
   }
 
   async init(): Promise<void> {
@@ -61,7 +83,7 @@ export class SpineViewer {
     });
     console.log("Spine Name:", spine.label);
     this.addSpineInstane(spine);
-    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine: spine.label, visibility: true } }));
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine, visibility: true } }));
   }
 
   private addSpineInstane(spine: SVSpine): void {
@@ -78,13 +100,7 @@ export class SpineViewer {
     spinesReferences.add(option);
 
     if (!this.isSpineSelectorBound) {
-      spinesReferences.addEventListener("change", (e: Event) => {
-        const target = e.target as HTMLSelectElement;
-        this.hideAllController();
-        dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
-          detail: { spine: target.value, visibility: true }
-        }));
-      });
+      spinesReferences.addEventListener("change", this.onSpineSelectorChange);
       this.isSpineSelectorBound = true;
     }
 
@@ -94,7 +110,46 @@ export class SpineViewer {
 
   private hideAllController(): void {
     this.spineInstances.forEach(spine => {
-      dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine: spine.label, visibility: false } }));
+      dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine, visibility: false } }));
     });
+  }
+
+  private destroySpineInstance(spine: SVSpine): void {
+    const index = this.spineInstances.indexOf(spine);
+    if (index < 0) {
+      return;
+    }
+
+    this.spineInstances.splice(index, 1);
+    spine.destroy({ children: true });
+
+    const spinesReferences = document.getElementById("spineSelector") as HTMLSelectElement;
+    if (!spinesReferences) {
+      return;
+    }
+
+    const optionToRemove = Array.from(spinesReferences.options).find((option) => option.value === spine.label);
+    if (optionToRemove) {
+      spinesReferences.remove(optionToRemove.index);
+    }
+
+    if (this.isSpineSelectorBound) {
+      spinesReferences.removeEventListener("change", this.onSpineSelectorChange);
+      this.isSpineSelectorBound = false;
+    }
+
+    if (this.spineInstances.length === 0) {
+      return;
+    }
+
+    spinesReferences.addEventListener("change", this.onSpineSelectorChange);
+    this.isSpineSelectorBound = true;
+
+    const activeSpine = this.spineInstances[0];
+    spinesReferences.value = activeSpine.label;
+    this.hideAllController();
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+      detail: { spine: activeSpine, visibility: true }
+    }));
   }
 }

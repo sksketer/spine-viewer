@@ -24,6 +24,23 @@ export class SpineController {
     this.updateScaleInputs();
   };
 
+  private readonly onToggleVisibility = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine; visibility: boolean }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    const controllerDiv = this.uiCreator.getMainDiv();
+    controllerDiv.style.display = detail.visibility ? "grid" : "none";
+  };
+
+  private readonly onDestroyRequested = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.dispose();
+  };
+
   constructor(spine: SVSpine) {
     this.spine = spine;
     this.animationNames = spine.skeleton.data.animations.map((a) => a.name);
@@ -39,20 +56,16 @@ export class SpineController {
   private bindHandlers(): void {
     this.bindAnimationHandler();
     this.bindLoopHandler();
+    this.bindVisibilityHandler();
+    this.bindAlphaHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
     this.bindAnimationStatus();
+    this.bindDestroyHandler();
     addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
     addEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
-    addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.toggleControllerVisibility.bind(this));
-  }
-
-  private toggleControllerVisibility(e: Event): void {
-    const detail = (e as CustomEvent<{ spine: string, visibility: boolean }>).detail;
-    if (detail.spine !== this.spine.label) return;
-    // show controller only if the event is for this spine instance
-    const controllerDiv = this.uiCreator.getMainDiv();
-    controllerDiv.style.display = detail.visibility ? "grid" : "none";
+    addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
+    addEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
   }
 
   private bindAnimationHandler(): void {
@@ -78,6 +91,30 @@ export class SpineController {
       if (trackEntry) {
         trackEntry.loop = this.isLooping;
       }
+    });
+  }
+
+  private bindVisibilityHandler(): void {
+    const visibilityCheckbox = this.uiCreator.getVisibilityCheckbox();
+    visibilityCheckbox.checked = this.spine.visible;
+    visibilityCheckbox.addEventListener("change", (e) => {
+      const target = e.target as HTMLInputElement;
+      this.spine.visible = target.checked;
+    });
+  }
+
+  private bindAlphaHandler(): void {
+    const alphaInput = this.uiCreator.getAlphaInput();
+    alphaInput.value = this.spine.alpha.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    alphaInput.addEventListener("input", (e) => {
+      const target = e.target as HTMLInputElement;
+      const alphaValue = Number.parseFloat(target.value);
+      if (Number.isNaN(alphaValue)) {
+        return;
+      }
+      const clampedAlpha = Math.max(0, Math.min(1, alphaValue));
+      this.spine.alpha = clampedAlpha;
+      target.value = clampedAlpha.toString();
     });
   }
 
@@ -141,5 +178,22 @@ export class SpineController {
       this.spine.state.timeScale = this.isPaused ? 0 : 1;
       this.uiCreator.setPlayPauseState(this.isPaused);
     });
+  }
+
+  private bindDestroyHandler(): void {
+    const destroyButton = this.uiCreator.getDestroyButton();
+    destroyButton.addEventListener("click", () => {
+      dispatchEvent(new CustomEvent("SPINE_DESTROY_REQUESTED", {
+        detail: { spine: this.spine }
+      }));
+    });
+  }
+
+  private dispose(): void {
+    removeEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
+    removeEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
+    removeEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
+    removeEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    this.uiCreator.getMainDiv().remove();
   }
 }

@@ -75,6 +75,29 @@
   cursor: pointer;
 }
 
+.visibilityCheckbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.alphaInput {
+  width: 76px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+}
+
+.alphaInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
 .playPauseButton {
   min-width: 88px;
   padding: 7px 12px;
@@ -95,4 +118,20 @@
 
 .playPauseButton:active {
   transform: translateY(1px);
+}
+
+.destroyButton {
+  min-width: 88px;
+  padding: 7px 12px;
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.destroyButton:hover {
+  filter: brightness(1.05);
 }

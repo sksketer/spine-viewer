@@ -12,6 +12,9 @@ export class ControllerUI {
   private animationSelect: HTMLSelectElement;
   private playPauseButton: HTMLButtonElement;
   private loopCheckbox: HTMLInputElement;
+  private visibilityCheckbox: HTMLInputElement;
+  private alphaInput: HTMLInputElement;
+  private destroyButton: HTMLButtonElement;
   private xPositionInput: HTMLInputElement;
   private yPositionInput: HTMLInputElement;
   private xScaleInput: HTMLInputElement;
@@ -35,8 +38,11 @@ export class ControllerUI {
     this.animations();
     this.playOrPauseAnimation();
     this.looping();
+    this.visibility();
+    this.alpha();
     this.positions();
     this.scales();
+    this.destroy();
   }
 
   createMainDiv(): void {
@@ -94,6 +100,37 @@ export class ControllerUI {
     this.loopCheckbox = loopCheckbox;
   }
 
+  visibility(): void {
+    const visibilityDiv = document.createElement('div');
+    const visibilityLabel = document.createElement('span');
+    visibilityLabel.textContent = "Visible: ";
+    visibilityDiv.appendChild(visibilityLabel);
+    const visibilityCheckbox = document.createElement('input');
+    visibilityCheckbox.type = "checkbox";
+    visibilityCheckbox.checked = true;
+    visibilityCheckbox.classList.add("visibilityCheckbox");
+    visibilityDiv.appendChild(visibilityCheckbox);
+    this.mainDiv.appendChild(visibilityDiv);
+    this.visibilityCheckbox = visibilityCheckbox;
+  }
+
+  alpha(): void {
+    const alphaDiv = document.createElement('div');
+    const alphaLabel = document.createElement('span');
+    alphaLabel.textContent = "Alpha: ";
+    alphaDiv.appendChild(alphaLabel);
+    const alphaInput = document.createElement('input');
+    alphaInput.type = "number";
+    alphaInput.min = "0";
+    alphaInput.max = "1";
+    alphaInput.step = "0.05";
+    alphaInput.value = "1";
+    alphaInput.classList.add("alphaInput");
+    alphaDiv.appendChild(alphaInput);
+    this.mainDiv.appendChild(alphaDiv);
+    this.alphaInput = alphaInput;
+  }
+
   positions(): void {
     const positionDiv = document.createElement('div');
     // X Input
@@ -149,6 +186,17 @@ export class ControllerUI {
     this.playPauseButton = button;
   }
 
+  destroy(): void {
+    const destroyDiv = document.createElement("div");
+    const button = document.createElement("button");
+    button.classList.add("destroyButton");
+    button.type = "button";
+    button.textContent = "Destroy";
+    destroyDiv.appendChild(button);
+    this.mainDiv.appendChild(destroyDiv);
+    this.destroyButton = button;
+  }
+
   setPlayPauseState(isPaused: boolean): void {
     this.playPauseButton.textContent = isPaused ? "Play" : "Pause";
   }
@@ -165,8 +213,20 @@ export class ControllerUI {
     return this.loopCheckbox;
   }
 
+  getVisibilityCheckbox(): HTMLInputElement {
+    return this.visibilityCheckbox;
+  }
+
+  getAlphaInput(): HTMLInputElement {
+    return this.alphaInput;
+  }
+
   getPlayPauseButton(): HTMLButtonElement {
     return this.playPauseButton;
+  }
+
+  getDestroyButton(): HTMLButtonElement {
+    return this.destroyButton;
   }
 
   getXPositionInput(): HTMLInputElement {
