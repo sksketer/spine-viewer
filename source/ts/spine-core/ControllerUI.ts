@@ -10,6 +10,7 @@ export class ControllerUI {
   private mainDiv: HTMLDivElement;
   private nameDiv: HTMLDivElement;
   private animationSelect: HTMLSelectElement;
+  private playPauseButton: HTMLButtonElement;
   private loopCheckbox: HTMLInputElement;
   private xPositionInput: HTMLInputElement;
   private yPositionInput: HTMLInputElement;
@@ -32,6 +33,7 @@ export class ControllerUI {
     this.nameHolder();
     this.version();
     this.animations();
+    this.playOrPauseAnimation();
     this.looping();
     this.positions();
     this.scales();
@@ -135,6 +137,21 @@ export class ControllerUI {
     this.yScaleInput = yInput;
   }
 
+  playOrPauseAnimation(): void {
+    const playPauseDiv = document.createElement("div");
+    const button = document.createElement("button");
+    button.id = "playPauseButton";
+    button.type = "button";
+    button.textContent = "Pause";
+    playPauseDiv.appendChild(button);
+    this.mainDiv.appendChild(playPauseDiv);
+    this.playPauseButton = button;
+  }
+
+  setPlayPauseState(isPaused: boolean): void {
+    this.playPauseButton.textContent = isPaused ? "Play" : "Pause";
+  }
+
   getNameDiv(): HTMLDivElement {
     return this.nameDiv;
   }
@@ -145,6 +162,10 @@ export class ControllerUI {
 
   getLoopCheckbox(): HTMLInputElement {
     return this.loopCheckbox;
+  }
+
+  getPlayPauseButton(): HTMLButtonElement {
+    return this.playPauseButton;
   }
 
   getXPositionInput(): HTMLInputElement {

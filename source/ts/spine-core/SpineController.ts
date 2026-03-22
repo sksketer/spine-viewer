@@ -5,6 +5,7 @@ export class SpineController {
   private readonly spine: SVSpine;
   private readonly animationNames: Array<string>;
   private isLooping: boolean | undefined = undefined;
+  private isPaused = false;
   private uiCreator: ControllerUI;
 
   constructor(spine: SVSpine) {
@@ -24,6 +25,7 @@ export class SpineController {
     this.bindLoopHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
+    this.bindAnimationStatus();
     addEventListener("SPINE_POSITION_UPDATED", this.updatePositionInputs.bind(this));
     addEventListener("SPINE_SCALE_UPDATED", this.updateScaleInputs.bind(this));
   }
@@ -33,6 +35,9 @@ export class SpineController {
     select.addEventListener("change", (e) => {
       const target = e.target as HTMLSelectElement;
       const animationName = target.value;
+      this.isPaused = false;
+      this.spine.state.timeScale = 1;
+      this.uiCreator.setPlayPauseState(this.isPaused);
       this.spine.playAnimation(animationName, this.isLooping);
     });
 
@@ -100,5 +105,16 @@ export class SpineController {
     const scaleYInput = this.uiCreator.getYScaleInput();
     scaleXInput.value = this.spine.scale.x.toString();
     scaleYInput.value = this.spine.scale.y.toString();
+  }
+
+  private bindAnimationStatus(): void {
+    const playPauseButton = this.uiCreator.getPlayPauseButton();
+    this.uiCreator.setPlayPauseState(this.isPaused);
+
+    playPauseButton.addEventListener("click", () => {
+      this.isPaused = !this.isPaused;
+      this.spine.state.timeScale = this.isPaused ? 0 : 1;
+      this.uiCreator.setPlayPauseState(this.isPaused);
+    });
   }
 }
