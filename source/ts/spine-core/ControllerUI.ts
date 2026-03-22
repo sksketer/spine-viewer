@@ -133,20 +133,27 @@ export class ControllerUI {
 
   positions(): void {
     const positionDiv = document.createElement('div');
-    // X Input
+    positionDiv.classList.add("positionGroup");
+
+    const xRow = document.createElement("div");
+    xRow.classList.add("controllerFieldRow");
     const xInputLabel = document.createElement('span');
     xInputLabel.textContent = "X: ";
-    positionDiv.appendChild(xInputLabel);
+    xRow.appendChild(xInputLabel);
     const xInput = document.createElement('input');
     xInput.classList.add("xPosition");
-    positionDiv.appendChild(xInput);
-    // Y Input
+    xRow.appendChild(xInput);
+    positionDiv.appendChild(xRow);
+
+    const yRow = document.createElement("div");
+    yRow.classList.add("controllerFieldRow");
     const yInputLabel = document.createElement('span');
     yInputLabel.textContent = "Y: ";
-    positionDiv.appendChild(yInputLabel);
+    yRow.appendChild(yInputLabel);
     const yInput = document.createElement('input');
     yInput.classList.add("yPosition");
-    positionDiv.appendChild(yInput);
+    yRow.appendChild(yInput);
+    positionDiv.appendChild(yRow);
 
     this.mainDiv.appendChild(positionDiv);
     this.xPositionInput = xInput;
@@ -155,20 +162,27 @@ export class ControllerUI {
 
   scales(): void {
     const scaleDiv = document.createElement('div');
-    // X Input
+    scaleDiv.classList.add("scaleGroup");
+
+    const scaleXRow = document.createElement("div");
+    scaleXRow.classList.add("controllerFieldRow");
     const xInputLabel = document.createElement('span');
     xInputLabel.textContent = "Scale X: ";
-    scaleDiv.appendChild(xInputLabel);
+    scaleXRow.appendChild(xInputLabel);
     const xInput = document.createElement('input');
     xInput.classList.add("xScale");
-    scaleDiv.appendChild(xInput);
-    // Y Input
+    scaleXRow.appendChild(xInput);
+    scaleDiv.appendChild(scaleXRow);
+
+    const scaleYRow = document.createElement("div");
+    scaleYRow.classList.add("controllerFieldRow");
     const yInputLabel = document.createElement('span');
     yInputLabel.textContent = "Scale Y: ";
-    scaleDiv.appendChild(yInputLabel);
+    scaleYRow.appendChild(yInputLabel);
     const yInput = document.createElement('input');
     yInput.classList.add("yScale");
-    scaleDiv.appendChild(yInput);
+    scaleYRow.appendChild(yInput);
+    scaleDiv.appendChild(scaleYRow);
 
     this.mainDiv.appendChild(scaleDiv);
     this.xScaleInput = xInput;
