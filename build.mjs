@@ -14,15 +14,24 @@ const config = {
   platform: "browser",
   target: "es2022",
   format: "esm",
-  outfile: "public/js/index.js",
+  outfile: "docs/js/index.js",
   sourcemap: true,
   plugins: [
     copy({
       resolveFrom: "cwd",
       assets: [
-        { from: ["source/index.html"], to: ["public"] },
-        { from: ["source/css/**/*"], to: ["public/css"] },
-        { from: ["source/assets/**/*"], to: ["public/assets"] }
+        {
+          from: ["source/index.html"],
+          to: ["docs"]
+        },
+        {
+          from: ["source/css/**/*"],
+          to: ["docs/css"]
+        },
+        {
+          from: ["source/assets/**/*"],
+          to: ["docs/assets"]
+        }
       ],
       watch: isWatch
     })
@@ -36,7 +45,7 @@ if (isWatch) {
 
   // ✅ ADD THIS PART
   await ctx.serve({
-    servedir: "public",
+    servedir: "docs",
     port: 3000
   });
 
