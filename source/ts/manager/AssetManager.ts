@@ -33,7 +33,8 @@ export class AssetManager {
 
       dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: { label: fileName, skeletonData: spineSkeletonData } }));
     } catch (err) {
-      console.error(err);
+      alert("Error loading Spine assets. Please check the console for details.");
+      throw new Error("Failed to load Spine assets", { cause: err });
     }
   }
   /**
