@@ -21,6 +21,9 @@ export class SVSpine extends Spine {
   private yScale: number = 1;
 
   private _tickerFn: () => void;
+  private isDragging = false;
+  private dragOffsetX = 0;
+  private dragOffsetY = 0;
 
   constructor(spineData: ISVSpineData) {
     super(spineData.skeletonData);
@@ -29,6 +32,7 @@ export class SVSpine extends Spine {
 
     this.updateProperties(spineData);
     this.initializeController();
+    this.enableCanvasInteraction();
 
     this.startWatching(); // ✅ start tracking changes
   }
@@ -76,6 +80,37 @@ export class SVSpine extends Spine {
     parentContainer?.addChild(this);
   }
 
+  private enableCanvasInteraction(): void {
+    this.eventMode = "static";
+    this.cursor = "grab";
+
+    this.on("pointerdown", this.onPointerDown.bind(this));
+    this.on("pointerup", this.onPointerUp.bind(this));
+    this.on("pointerupoutside", this.onPointerUp.bind(this));
+    this.on("globalpointermove", this.onPointerMove.bind(this));
+  }
+
+  private onPointerDown(e: any): void {
+    this.isDragging = true;
+    this.cursor = "grabbing";
+    this.dragOffsetX = e.global.x - this.x;
+    this.dragOffsetY = e.global.y - this.y;
+    dispatchEvent(new CustomEvent("SPINE_SELECTED", { detail: { spine: this } }));
+  }
+
+  private onPointerUp(): void {
+    this.isDragging = false;
+    this.cursor = "grab";
+  }
+
+  private onPointerMove(e: any): void {
+    if (!this.isDragging) {
+      return;
+    }
+
+    this.setPosition(e.global.x - this.dragOffsetX, e.global.y - this.dragOffsetY);
+  }
+
   // ✅ START WATCHING (Ticker-based)
   private startWatching(): void {
     this._tickerFn = this.updateOnChangeProperties.bind(this);
@@ -88,6 +123,7 @@ export class SVSpine extends Spine {
   destroy(options?: any): void {
     const ticker: Ticker = (globalThis as any).__PIXI_APP__.ticker;
     ticker.remove(this._tickerFn);
+    this.removeAllListeners();
 
     super.destroy(options);
   }

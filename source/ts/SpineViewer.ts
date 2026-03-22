@@ -10,16 +10,47 @@ export class SpineViewer {
   private readonly parent?: HTMLElement;
   private readonly canvasProps?: ICanvasOptions;
   private readonly spineInstances: Array<SVSpine> = [];
+  private activeSpine?: SVSpine;
   private readonly onSpineSelectorChange = (e: Event): void => {
     const target = e.target as HTMLSelectElement;
     const selectedSpine = this.spineInstances.find((item) => item.label === target.value);
     if (!selectedSpine) {
       return;
     }
+    this.activeSpine = selectedSpine;
     this.hideAllController();
     dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
       detail: { spine: selectedSpine, visibility: true }
     }));
+  };
+
+  private readonly onSpineSelected = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (!detail?.spine) {
+      return;
+    }
+
+    this.activeSpine = detail.spine;
+    this.hideAllController();
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+      detail: { spine: detail.spine, visibility: true }
+    }));
+
+    const spinesReferences = document.getElementById("spineSelector") as HTMLSelectElement;
+    if (spinesReferences) {
+      spinesReferences.value = detail.spine.label;
+    }
+  };
+
+  private readonly onCanvasWheel = (e: WheelEvent): void => {
+    if (!e.ctrlKey || !this.activeSpine) {
+      return;
+    }
+
+    e.preventDefault();
+    const currentScale = this.activeSpine.scale.x;
+    const nextScale = Math.max(0.1, Math.min(10, currentScale - e.deltaY * 0.0015));
+    this.activeSpine.scale.set(nextScale);
   };
 
   private readonly onSpineDestroyRequested = (e: Event): void => {
@@ -45,6 +76,7 @@ export class SpineViewer {
     });
 
     addEventListener("SPINE_DESTROY_REQUESTED", this.onSpineDestroyRequested);
+    addEventListener("SPINE_SELECTED", this.onSpineSelected);
   }
 
   async init(): Promise<void> {
@@ -56,6 +88,7 @@ export class SpineViewer {
       height: this.canvasProps?.height
     });
     this.parent?.appendChild(this.stage.canvas);
+    this.stage.canvas.addEventListener("wheel", this.onCanvasWheel, { passive: false });
     this.initializeMainScene();
   }
 
@@ -83,6 +116,7 @@ export class SpineViewer {
     });
     console.log("Spine Name:", spine.label);
     this.addSpineInstane(spine);
+    this.activeSpine = spine;
     dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine, visibility: true } }));
   }
 
@@ -139,6 +173,7 @@ export class SpineViewer {
     }
 
     if (this.spineInstances.length === 0) {
+      this.activeSpine = undefined;
       return;
     }
 
@@ -146,6 +181,7 @@ export class SpineViewer {
     this.isSpineSelectorBound = true;
 
     const activeSpine = this.spineInstances[0];
+    this.activeSpine = activeSpine;
     spinesReferences.value = activeSpine.label;
     this.hideAllController();
     dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
