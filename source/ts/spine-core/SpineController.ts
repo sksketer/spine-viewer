@@ -24,6 +24,8 @@ export class SpineController {
     this.bindLoopHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
+    addEventListener("SPINE_POSITION_UPDATED", this.updatePositionInputs.bind(this));
+    addEventListener("SPINE_SCALE_UPDATED", this.updateScaleInputs.bind(this));
   }
 
   private bindAnimationHandler() {
@@ -51,7 +53,6 @@ export class SpineController {
 
   private bindPositionHandler(): void {
     const xPositionInput = this.uiCreator.getXPositionInput();
-    xPositionInput.value = this.spine.x.toString();
     xPositionInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const x = Number.parseFloat(target.value) || 0;
@@ -59,19 +60,25 @@ export class SpineController {
     });
 
     const yPositionInput = this.uiCreator.getYPositionInput();
-    yPositionInput.value = this.spine.y.toString();
     yPositionInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const y = Number.parseFloat(target.value) || 0;
       this.spine.y = y;
     });
+
+    this.updatePositionInputs();
+  }
+
+  private updatePositionInputs(): void {
+    const xPositionInput = this.uiCreator.getXPositionInput();
+    const yPositionInput = this.uiCreator.getYPositionInput();
+    xPositionInput.value = this.spine.x.toString();
+    yPositionInput.value = this.spine.y.toString();
   }
 
   private bindScaleHandler(): void {
     const scaleXInput = this.uiCreator.getXScaleInput();
     const scaleYInput = this.uiCreator.getYScaleInput();
-    scaleXInput.value = this.spine.scale.x.toString();
-    scaleYInput.value = this.spine.scale.y.toString();
 
     scaleXInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
@@ -84,5 +91,14 @@ export class SpineController {
       const scaleY = Number.parseFloat(target.value) || 1;
       this.spine.scale.set(this.spine.scale.x, scaleY);
     });
+
+    this.updateScaleInputs();
+  }
+
+  private updateScaleInputs(): void {
+    const scaleXInput = this.uiCreator.getXScaleInput();
+    const scaleYInput = this.uiCreator.getYScaleInput();
+    scaleXInput.value = this.spine.scale.x.toString();
+    scaleYInput.value = this.spine.scale.y.toString();
   }
 }
