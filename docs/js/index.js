@@ -57181,54 +57181,310 @@ var Spine = class _Spine extends ViewContainer {
   }
 };
 
+// source/ts/spine-core/ControllerUI.ts
+var ControllerUI = class {
+  spineRef;
+  spineName;
+  parentDiv;
+  animationNames;
+  mainDiv;
+  nameDiv;
+  animationSelect;
+  playPauseButton;
+  loopCheckbox;
+  visibilityCheckbox;
+  alphaInput;
+  destroyButton;
+  xPositionInput;
+  yPositionInput;
+  xScaleInput;
+  yScaleInput;
+  constructor(spineRef, animationNames, parentDiv) {
+    this.spineRef = spineRef;
+    this.spineName = spineRef.label;
+    this.animationNames = animationNames;
+    if (typeof parentDiv === "string") {
+      this.parentDiv = document.querySelector(parentDiv);
+    } else {
+      this.parentDiv = parentDiv || document.querySelector(".controllerDiv");
+    }
+  }
+  init() {
+    this.createMainDiv();
+    this.nameHolder();
+    this.version();
+    this.animations();
+    this.playOrPauseAnimation();
+    this.looping();
+    this.visibility();
+    this.alpha();
+    this.positions();
+    this.scales();
+    this.destroy();
+  }
+  createMainDiv() {
+    const mainDiv = document.createElement("div");
+    mainDiv.classList.add("controllerMainDiv");
+    mainDiv.id = `controller-${this.spineName.toLowerCase()}`;
+    this.parentDiv.appendChild(mainDiv);
+    this.mainDiv = mainDiv;
+  }
+  version() {
+    const versionDiv = document.createElement("div");
+    versionDiv.classList.add("versionHolder");
+    versionDiv.textContent = `Version: ${this.spineRef.version}`;
+    this.mainDiv.appendChild(versionDiv);
+  }
+  nameHolder() {
+    const nameDiv = document.createElement("div");
+    nameDiv.classList.add("spineNameHolder");
+    nameDiv.textContent = `${this.spineName.toString().toUpperCase().replaceAll("_", " ")}`;
+    this.mainDiv.appendChild(nameDiv);
+    this.nameDiv = nameDiv;
+  }
+  animations() {
+    const animationDiv = document.createElement("div");
+    const heading = document.createElement("span");
+    heading.classList.add("animationHeading");
+    heading.textContent = "Animations: ";
+    animationDiv.appendChild(heading);
+    const animationSelect = document.createElement("select");
+    animationSelect.classList.add("animationSelect");
+    this.animationNames.forEach((name) => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.text = name;
+      animationSelect.appendChild(option);
+    });
+    animationDiv.appendChild(animationSelect);
+    this.mainDiv.appendChild(animationDiv);
+    this.animationSelect = animationSelect;
+  }
+  looping() {
+    const loopDiv = document.createElement("div");
+    const loopLabel = document.createElement("span");
+    loopLabel.textContent = "Loop: ";
+    loopDiv.appendChild(loopLabel);
+    const loopCheckbox = document.createElement("input");
+    loopCheckbox.type = "checkbox";
+    loopCheckbox.classList.add("loopCheckbox");
+    loopDiv.appendChild(loopCheckbox);
+    this.mainDiv.appendChild(loopDiv);
+    this.loopCheckbox = loopCheckbox;
+  }
+  visibility() {
+    const visibilityDiv = document.createElement("div");
+    const visibilityLabel = document.createElement("span");
+    visibilityLabel.textContent = "Visible: ";
+    visibilityDiv.appendChild(visibilityLabel);
+    const visibilityCheckbox = document.createElement("input");
+    visibilityCheckbox.type = "checkbox";
+    visibilityCheckbox.checked = true;
+    visibilityCheckbox.classList.add("visibilityCheckbox");
+    visibilityDiv.appendChild(visibilityCheckbox);
+    this.mainDiv.appendChild(visibilityDiv);
+    this.visibilityCheckbox = visibilityCheckbox;
+  }
+  alpha() {
+    const alphaDiv = document.createElement("div");
+    const alphaLabel = document.createElement("span");
+    alphaLabel.textContent = "Alpha: ";
+    alphaDiv.appendChild(alphaLabel);
+    const alphaInput = document.createElement("input");
+    alphaInput.type = "number";
+    alphaInput.min = "0";
+    alphaInput.max = "1";
+    alphaInput.step = "0.05";
+    alphaInput.value = "1";
+    alphaInput.classList.add("alphaInput");
+    alphaDiv.appendChild(alphaInput);
+    this.mainDiv.appendChild(alphaDiv);
+    this.alphaInput = alphaInput;
+  }
+  positions() {
+    const positionDiv = document.createElement("div");
+    positionDiv.classList.add("positionGroup");
+    const xRow = document.createElement("div");
+    xRow.classList.add("controllerFieldRow");
+    const xInputLabel = document.createElement("span");
+    xInputLabel.textContent = "X: ";
+    xRow.appendChild(xInputLabel);
+    const xInput = document.createElement("input");
+    xInput.classList.add("xPosition");
+    xRow.appendChild(xInput);
+    positionDiv.appendChild(xRow);
+    const yRow = document.createElement("div");
+    yRow.classList.add("controllerFieldRow");
+    const yInputLabel = document.createElement("span");
+    yInputLabel.textContent = "Y: ";
+    yRow.appendChild(yInputLabel);
+    const yInput = document.createElement("input");
+    yInput.classList.add("yPosition");
+    yRow.appendChild(yInput);
+    positionDiv.appendChild(yRow);
+    this.mainDiv.appendChild(positionDiv);
+    this.xPositionInput = xInput;
+    this.yPositionInput = yInput;
+  }
+  scales() {
+    const scaleDiv = document.createElement("div");
+    scaleDiv.classList.add("scaleGroup");
+    const scaleXRow = document.createElement("div");
+    scaleXRow.classList.add("controllerFieldRow");
+    const xInputLabel = document.createElement("span");
+    xInputLabel.textContent = "Scale X: ";
+    scaleXRow.appendChild(xInputLabel);
+    const xInput = document.createElement("input");
+    xInput.classList.add("xScale");
+    scaleXRow.appendChild(xInput);
+    scaleDiv.appendChild(scaleXRow);
+    const scaleYRow = document.createElement("div");
+    scaleYRow.classList.add("controllerFieldRow");
+    const yInputLabel = document.createElement("span");
+    yInputLabel.textContent = "Scale Y: ";
+    scaleYRow.appendChild(yInputLabel);
+    const yInput = document.createElement("input");
+    yInput.classList.add("yScale");
+    scaleYRow.appendChild(yInput);
+    scaleDiv.appendChild(scaleYRow);
+    this.mainDiv.appendChild(scaleDiv);
+    this.xScaleInput = xInput;
+    this.yScaleInput = yInput;
+  }
+  playOrPauseAnimation() {
+    const playPauseDiv = document.createElement("div");
+    const button = document.createElement("button");
+    button.classList.add("playPauseButton");
+    button.type = "button";
+    button.textContent = "Pause";
+    playPauseDiv.appendChild(button);
+    this.mainDiv.appendChild(playPauseDiv);
+    this.playPauseButton = button;
+  }
+  destroy() {
+    const destroyDiv = document.createElement("div");
+    const button = document.createElement("button");
+    button.classList.add("destroyButton");
+    button.type = "button";
+    button.textContent = "Destroy";
+    destroyDiv.appendChild(button);
+    this.mainDiv.appendChild(destroyDiv);
+    this.destroyButton = button;
+  }
+  setPlayPauseState(isPaused) {
+    this.playPauseButton.textContent = isPaused ? "Play" : "Pause";
+  }
+  getNameDiv() {
+    return this.nameDiv;
+  }
+  getAnimationSelect() {
+    return this.animationSelect;
+  }
+  getLoopCheckbox() {
+    return this.loopCheckbox;
+  }
+  getVisibilityCheckbox() {
+    return this.visibilityCheckbox;
+  }
+  getAlphaInput() {
+    return this.alphaInput;
+  }
+  getPlayPauseButton() {
+    return this.playPauseButton;
+  }
+  getDestroyButton() {
+    return this.destroyButton;
+  }
+  getXPositionInput() {
+    return this.xPositionInput;
+  }
+  getYPositionInput() {
+    return this.yPositionInput;
+  }
+  getXScaleInput() {
+    return this.xScaleInput;
+  }
+  getYScaleInput() {
+    return this.yScaleInput;
+  }
+  getMainDiv() {
+    return this.mainDiv;
+  }
+};
+
 // source/ts/spine-core/SpineController.ts
 var SpineController = class {
   spine;
   animationNames;
   isLooping = void 0;
-  constructor(spine, animationName) {
+  isPaused = false;
+  uiCreator;
+  onPositionUpdated = (e2) => {
+    const detail = e2.detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.updatePositionInputs();
+  };
+  onScaleUpdated = (e2) => {
+    const detail = e2.detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.updateScaleInputs();
+  };
+  onToggleVisibility = (e2) => {
+    const detail = e2.detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    const controllerDiv = this.uiCreator.getMainDiv();
+    controllerDiv.style.display = detail.visibility ? "grid" : "none";
+  };
+  onDestroyRequested = (e2) => {
+    const detail = e2.detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.dispose();
+  };
+  constructor(spine) {
     this.spine = spine;
-    this.animationNames = animationName;
-    this.init();
+    this.animationNames = spine.skeleton.data.animations.map((a2) => a2.name);
   }
   init() {
     this.isLooping = false;
-    this.updateSpineName();
-    this.createAnimationSelect();
+    this.uiCreator = new ControllerUI(this.spine, this.animationNames);
+    this.uiCreator.init();
     this.bindHandlers();
-  }
-  updateSpineName() {
-    const spineNameDiv = document.getElementById("spineName");
-    spineNameDiv.textContent = this.spine.label;
   }
   bindHandlers() {
     this.bindAnimationHandler();
     this.bindLoopHandler();
+    this.bindVisibilityHandler();
+    this.bindAlphaHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
-  }
-  createAnimationSelect() {
-    const animationNameDIV = document.getElementById("animationNameDIV");
-    const select = document.createElement("select");
-    select.id = "animationSelect";
-    this.animationNames.forEach((name) => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.text = name;
-      select.appendChild(option);
-    });
-    animationNameDIV.appendChild(select);
+    this.bindAnimationStatus();
+    this.bindDestroyHandler();
+    addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
+    addEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
+    addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
+    addEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
   }
   bindAnimationHandler() {
-    const select = document.getElementById("animationSelect");
+    const select = this.uiCreator.getAnimationSelect();
     select.addEventListener("change", (e2) => {
       const target = e2.target;
       const animationName = target.value;
+      this.isPaused = false;
+      this.spine.state.timeScale = 1;
+      this.uiCreator.setPlayPauseState(this.isPaused);
       this.spine.playAnimation(animationName, this.isLooping);
     });
   }
   bindLoopHandler() {
-    const loopButton = document.getElementById("loopCheckbox");
+    const loopButton = this.uiCreator.getLoopCheckbox();
     loopButton.checked = false;
     loopButton.addEventListener("change", (e2) => {
       const target = e2.target;
@@ -57239,25 +57495,52 @@ var SpineController = class {
       }
     });
   }
+  bindVisibilityHandler() {
+    const visibilityCheckbox = this.uiCreator.getVisibilityCheckbox();
+    visibilityCheckbox.checked = this.spine.visible;
+    visibilityCheckbox.addEventListener("change", (e2) => {
+      const target = e2.target;
+      this.spine.visible = target.checked;
+    });
+  }
+  bindAlphaHandler() {
+    const alphaInput = this.uiCreator.getAlphaInput();
+    alphaInput.value = this.spine.alpha.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    alphaInput.addEventListener("input", (e2) => {
+      const target = e2.target;
+      const alphaValue = Number.parseFloat(target.value);
+      if (Number.isNaN(alphaValue)) {
+        return;
+      }
+      const clampedAlpha = Math.max(0, Math.min(1, alphaValue));
+      this.spine.alpha = clampedAlpha;
+      target.value = clampedAlpha.toString();
+    });
+  }
   bindPositionHandler() {
-    const xPositionDiv = document.getElementById("xPos");
-    xPositionDiv.value = this.spine.x.toString();
-    xPositionDiv.addEventListener("input", (e2) => {
+    const xPositionInput = this.uiCreator.getXPositionInput();
+    xPositionInput.addEventListener("input", (e2) => {
       const target = e2.target;
       const x2 = Number.parseFloat(target.value) || 0;
       this.spine.x = x2;
     });
-    const yPositionDiv = document.getElementById("yPos");
-    yPositionDiv.value = this.spine.y.toString();
-    yPositionDiv.addEventListener("input", (e2) => {
+    const yPositionInput = this.uiCreator.getYPositionInput();
+    yPositionInput.addEventListener("input", (e2) => {
       const target = e2.target;
       const y2 = Number.parseFloat(target.value) || 0;
       this.spine.y = y2;
     });
+    this.updatePositionInputs();
+  }
+  updatePositionInputs() {
+    const xPositionInput = this.uiCreator.getXPositionInput();
+    const yPositionInput = this.uiCreator.getYPositionInput();
+    xPositionInput.value = this.spine.x.toString();
+    yPositionInput.value = this.spine.y.toString();
   }
   bindScaleHandler() {
-    const scaleXInput = document.getElementById("scaleX");
-    const scaleYInput = document.getElementById("scaleY");
+    const scaleXInput = this.uiCreator.getXScaleInput();
+    const scaleYInput = this.uiCreator.getYScaleInput();
     scaleXInput.addEventListener("input", (e2) => {
       const target = e2.target;
       const scaleX = Number.parseFloat(target.value) || 1;
@@ -57268,15 +57551,61 @@ var SpineController = class {
       const scaleY = Number.parseFloat(target.value) || 1;
       this.spine.scale.set(this.spine.scale.x, scaleY);
     });
+    this.updateScaleInputs();
+  }
+  updateScaleInputs() {
+    const scaleXInput = this.uiCreator.getXScaleInput();
+    const scaleYInput = this.uiCreator.getYScaleInput();
+    scaleXInput.value = this.spine.scale.x.toString();
+    scaleYInput.value = this.spine.scale.y.toString();
+  }
+  bindAnimationStatus() {
+    const playPauseButton = this.uiCreator.getPlayPauseButton();
+    this.uiCreator.setPlayPauseState(this.isPaused);
+    playPauseButton.addEventListener("click", () => {
+      this.isPaused = !this.isPaused;
+      this.spine.state.timeScale = this.isPaused ? 0 : 1;
+      this.uiCreator.setPlayPauseState(this.isPaused);
+    });
+  }
+  bindDestroyHandler() {
+    const destroyButton = this.uiCreator.getDestroyButton();
+    destroyButton.addEventListener("click", () => {
+      dispatchEvent(new CustomEvent("SPINE_DESTROY_REQUESTED", {
+        detail: { spine: this.spine }
+      }));
+    });
+  }
+  dispose() {
+    removeEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
+    removeEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
+    removeEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
+    removeEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    this.uiCreator.getMainDiv().remove();
   }
 };
 
 // source/ts/spine-core/SVSpine.ts
 var SVSpine = class extends Spine {
+  _version;
+  xPosition = 0;
+  yPosition = 0;
+  xScale = 1;
+  yScale = 1;
+  _tickerFn;
+  isDragging = false;
+  dragOffsetX = 0;
+  dragOffsetY = 0;
   constructor(spineData) {
     super(spineData.skeletonData);
+    this._version = spineData.skeletonData.version;
     this.updateProperties(spineData);
     this.initializeController();
+    this.enableCanvasInteraction();
+    this.startWatching();
+  }
+  get version() {
+    return this._version;
   }
   updateProperties(spineData) {
     this.setPosition(spineData?.x ?? 0, spineData?.y ?? 0);
@@ -57285,32 +57614,88 @@ var SVSpine = class extends Spine {
     this.label = spineData.label ?? "Unnamed Spine";
   }
   initializeController() {
-    new SpineController(this, this.skeleton.data.animations.map((a2) => a2.name));
+    const spineController = new SpineController(this);
+    spineController.init();
   }
   playAnimation(name, loop = false) {
-    if (!this) return;
     this.state.setAnimation(0, name, loop);
   }
   stopAnimation() {
-    if (!this) return;
     this.state.clearTracks();
   }
   setSkin(name) {
-    if (!this) return;
     this.skeleton.setSkinByName(name);
     this.skeleton.setSlotsToSetupPose();
   }
   setPosition(x2, y2) {
-    if (!this) return;
-    this.x = x2;
-    this.y = y2;
+    this.xPosition = this.x = x2;
+    this.yPosition = this.y = y2;
   }
   setScale(scale) {
-    if (!this) return;
     this.scale.set(scale);
+    this.xScale = this.yScale = scale;
   }
   setParent(parentContainer) {
     parentContainer?.addChild(this);
+  }
+  enableCanvasInteraction() {
+    this.eventMode = "static";
+    this.cursor = "grab";
+    this.on("pointerdown", this.onPointerDown.bind(this));
+    this.on("pointerup", this.onPointerUp.bind(this));
+    this.on("pointerupoutside", this.onPointerUp.bind(this));
+    this.on("globalpointermove", this.onPointerMove.bind(this));
+  }
+  onPointerDown(e2) {
+    this.isDragging = true;
+    this.cursor = "grabbing";
+    this.dragOffsetX = e2.global.x - this.x;
+    this.dragOffsetY = e2.global.y - this.y;
+    dispatchEvent(new CustomEvent("SPINE_SELECTED", { detail: { spine: this } }));
+  }
+  onPointerUp() {
+    this.isDragging = false;
+    this.cursor = "grab";
+  }
+  onPointerMove(e2) {
+    if (!this.isDragging) {
+      return;
+    }
+    this.setPosition(e2.global.x - this.dragOffsetX, e2.global.y - this.dragOffsetY);
+  }
+  // ✅ START WATCHING (Ticker-based)
+  startWatching() {
+    this._tickerFn = this.updateOnChangeProperties.bind(this);
+    const ticker = globalThis.__PIXI_APP__.ticker;
+    ticker.add(this._tickerFn);
+  }
+  // ✅ STOP WATCHING (important for cleanup)
+  destroy(options) {
+    const ticker = globalThis.__PIXI_APP__.ticker;
+    ticker.remove(this._tickerFn);
+    this.removeAllListeners();
+    super.destroy(options);
+  }
+  // ✅ SAFE CHECK (no recursion)
+  updateOnChangeProperties() {
+    if (this.x !== this.xPosition || this.y !== this.yPosition) {
+      this.xPosition = this.x;
+      this.yPosition = this.y;
+      dispatchEvent(
+        new CustomEvent("SPINE_POSITION_UPDATED", {
+          detail: { spine: this, x: this.xPosition, y: this.yPosition }
+        })
+      );
+    }
+    if (this.scale.x !== this.xScale || this.scale.y !== this.yScale) {
+      this.xScale = this.scale.x;
+      this.yScale = this.scale.y;
+      dispatchEvent(
+        new CustomEvent("SPINE_SCALE_UPDATED", {
+          detail: { spine: this, x: this.xScale, y: this.yScale }
+        })
+      );
+    }
   }
 };
 
@@ -57320,6 +57705,52 @@ var SpineViewer = class {
   stage;
   parent;
   canvasProps;
+  spineInstances = [];
+  activeSpine;
+  onSpineSelectorChange = (e2) => {
+    const target = e2.target;
+    const selectedSpine = this.spineInstances.find((item) => item.label === target.value);
+    if (!selectedSpine) {
+      return;
+    }
+    this.activeSpine = selectedSpine;
+    this.hideAllController();
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+      detail: { spine: selectedSpine, visibility: true }
+    }));
+  };
+  onSpineSelected = (e2) => {
+    const detail = e2.detail;
+    if (!detail?.spine) {
+      return;
+    }
+    this.activeSpine = detail.spine;
+    this.hideAllController();
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+      detail: { spine: detail.spine, visibility: true }
+    }));
+    const spinesReferences = document.getElementById("spineSelector");
+    if (spinesReferences) {
+      spinesReferences.value = detail.spine.label;
+    }
+  };
+  onCanvasWheel = (e2) => {
+    if (!e2.ctrlKey || !this.activeSpine) {
+      return;
+    }
+    e2.preventDefault();
+    const currentScale = this.activeSpine.scale.x;
+    const nextScale = Math.max(0.1, Math.min(10, currentScale - e2.deltaY * 15e-4));
+    this.activeSpine.scale.set(nextScale);
+  };
+  onSpineDestroyRequested = (e2) => {
+    const detail = e2.detail;
+    if (!detail?.spine) {
+      return;
+    }
+    this.destroySpineInstance(detail.spine);
+  };
+  isSpineSelectorBound = false;
   scene;
   constructor(parent, canvasProps) {
     this.parent = parent;
@@ -57330,6 +57761,8 @@ var SpineViewer = class {
     addEventListener("spineAssetsLoaded", (e2) => {
       this.createSpine(e2.detail);
     });
+    addEventListener("SPINE_DESTROY_REQUESTED", this.onSpineDestroyRequested);
+    addEventListener("SPINE_SELECTED", this.onSpineSelected);
   }
   async init() {
     this.stage = new Application();
@@ -57340,13 +57773,14 @@ var SpineViewer = class {
       height: this.canvasProps?.height
     });
     this.parent?.appendChild(this.stage.canvas);
+    this.stage.canvas.addEventListener("wheel", this.onCanvasWheel, { passive: false });
     this.initializeMainScene();
   }
   initializeMainScene() {
     this.scene = new Container();
     this.scene.label = "Main Scene";
     this.stage?.stage.addChild(this.scene);
-    dispatchEvent(new CustomEvent("SCENE_READY", { detail: { canvasWidth: this.stage.canvas.width, canvasHeight: this.stage.canvas.height } }));
+    dispatchEvent(new CustomEvent("SCENE_READY", { detail: { canvasProps: { width: this.stage.canvas.width, height: this.stage.canvas.height } } }));
   }
   async getStage() {
     if (!this.stage) {
@@ -57355,6 +57789,7 @@ var SpineViewer = class {
     return this.stage;
   }
   createSpine(spineData) {
+    this.hideAllController();
     const spine = new SVSpine({
       ...spineData,
       x: (this.canvasProps?.width ?? 0) / 2,
@@ -57362,12 +57797,70 @@ var SpineViewer = class {
       parentContainer: this.scene
     });
     console.log("Spine Name:", spine.label);
+    this.addSpineInstane(spine);
+    this.activeSpine = spine;
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine, visibility: true } }));
+  }
+  addSpineInstane(spine) {
+    this.spineInstances.push(spine);
+    const spinesReferences = document.getElementById("spineSelector");
+    if (!spinesReferences) {
+      return;
+    }
+    const option = document.createElement("option");
+    option.value = spine.label;
+    option.text = spine.label;
+    spinesReferences.add(option);
+    if (!this.isSpineSelectorBound) {
+      spinesReferences.addEventListener("change", this.onSpineSelectorChange);
+      this.isSpineSelectorBound = true;
+    }
+    spinesReferences.value = spine.label;
+  }
+  hideAllController() {
+    this.spineInstances.forEach((spine) => {
+      dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine, visibility: false } }));
+    });
+  }
+  destroySpineInstance(spine) {
+    const index = this.spineInstances.indexOf(spine);
+    if (index < 0) {
+      return;
+    }
+    this.spineInstances.splice(index, 1);
+    spine.destroy({ children: true });
+    const spinesReferences = document.getElementById("spineSelector");
+    if (!spinesReferences) {
+      return;
+    }
+    const optionToRemove = Array.from(spinesReferences.options).find((option) => option.value === spine.label);
+    if (optionToRemove) {
+      spinesReferences.remove(optionToRemove.index);
+    }
+    if (this.isSpineSelectorBound) {
+      spinesReferences.removeEventListener("change", this.onSpineSelectorChange);
+      this.isSpineSelectorBound = false;
+    }
+    if (this.spineInstances.length === 0) {
+      this.activeSpine = void 0;
+      return;
+    }
+    spinesReferences.addEventListener("change", this.onSpineSelectorChange);
+    this.isSpineSelectorBound = true;
+    const activeSpine = this.spineInstances[0];
+    this.activeSpine = activeSpine;
+    spinesReferences.value = activeSpine.label;
+    this.hideAllController();
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+      detail: { spine: activeSpine, visibility: true }
+    }));
   }
 };
 
 // source/ts/manager/SpineUploadManager.ts
 var SpineUploadManager = class {
   files;
+  maxTextureSize = 2048;
   constructor(files) {
     this.files = files;
   }
@@ -57383,12 +57876,13 @@ var SpineUploadManager = class {
     const requiredTextures = await this.extractAtlasPages(atlasFile);
     const uploadedTextures = this.findTextureFiles();
     this.validateTextures(requiredTextures, uploadedTextures);
+    await this.warnLargeTextures(uploadedTextures);
     return {
       skeleton: {
         file: skeletonFile,
         url: URL.createObjectURL(skeletonFile),
-        type: skeletonFile.name.endsWith(".json") ? "json" : "binary",
-        version: skeletonFile.name.endsWith(".json") ? await this.extractSpineVersion(skeletonFile) : void 0
+        type: /\.json$/i.test(skeletonFile.name) ? "json" : "binary",
+        version: /\.json$/i.test(skeletonFile.name) ? await this.extractSpineVersion(skeletonFile) : void 0
       },
       atlas: {
         file: atlasFile,
@@ -57397,7 +57891,7 @@ var SpineUploadManager = class {
       textures: uploadedTextures.map((file) => ({
         file,
         url: URL.createObjectURL(file),
-        type: uploadedTextures[0].name.split(".")[1]
+        type: this.getTextureType(file.name)
       }))
     };
   }
@@ -57405,15 +57899,13 @@ var SpineUploadManager = class {
   // Private Helpers
   // -----------------------------
   findSkeletonFile() {
-    return this.files.find(
-      (f2) => f2.name.endsWith(".json") || f2.name.endsWith(".skel")
-    );
+    return this.files.find((f2) => /\.(json|skel)$/i.test(f2.name));
   }
   findAtlasFile() {
-    return this.files.find((f2) => f2.name.endsWith(".atlas"));
+    return this.files.find((f2) => /\.atlas$/i.test(f2.name));
   }
   findTextureFiles() {
-    return this.files.filter((f2) => f2.name.endsWith(".png"));
+    return this.files.filter((f2) => /\.(png|jpe?g)$/i.test(f2.name));
   }
   async extractAtlasPages(atlasFile) {
     const text = await atlasFile.text();
@@ -57421,7 +57913,7 @@ var SpineUploadManager = class {
     const pages = [];
     for (const line of lines) {
       const trimmed = line.trim();
-      if (trimmed.endsWith(".png")) {
+      if (/\.(png|jpe?g)$/i.test(trimmed)) {
         pages.push(trimmed);
       }
     }
@@ -57431,9 +57923,9 @@ var SpineUploadManager = class {
     return pages;
   }
   validateTextures(required, uploaded) {
-    const uploadedNames = new Set(uploaded.map((f2) => f2.name));
+    const uploadedNames = new Set(uploaded.map((f2) => f2.name.toLowerCase()));
     const missing = required.filter(
-      (name) => !uploadedNames.has(name)
+      (name) => !uploadedNames.has(name.toLowerCase())
     );
     if (missing.length > 0) {
       throw new Error(
@@ -57450,6 +57942,50 @@ var SpineUploadManager = class {
       return void 0;
     }
   }
+  getTextureType(fileName) {
+    const normalizedName = fileName.toLowerCase();
+    if (normalizedName.endsWith(".png")) {
+      return "png";
+    }
+    if (normalizedName.endsWith(".jpeg")) {
+      return "jpeg";
+    }
+    return "jpg";
+  }
+  async warnLargeTextures(textures) {
+    const oversizedTextures = [];
+    for (const texture of textures) {
+      const dimension = await this.getImageDimensions(texture);
+      if (!dimension) {
+        continue;
+      }
+      if (dimension.width > this.maxTextureSize || dimension.height > this.maxTextureSize) {
+        oversizedTextures.push(`${texture.name} (${dimension.width}x${dimension.height})`);
+      }
+    }
+    if (oversizedTextures.length > 0) {
+      globalThis.alert(
+        "Spine texture file are greater than 2048x2048 can cause memory leak issue on iOS devices.\n\n" + oversizedTextures.join("\n")
+      );
+    }
+  }
+  async getImageDimensions(file) {
+    return new Promise((resolve) => {
+      const image = new Image();
+      const url = URL.createObjectURL(file);
+      image.onload = () => {
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+        URL.revokeObjectURL(url);
+        resolve({ width, height });
+      };
+      image.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      image.src = url;
+    });
+  }
 };
 
 // source/ts/manager/AssetManager.ts
@@ -57459,38 +57995,44 @@ var AssetManager = class {
   }
   bindEvents() {
     const input = document.querySelector("#spineUpload");
+    const loadNewSpineBtn = document.querySelector("#addNewSpine");
     input.addEventListener("change", this.onFileSelected.bind(this, input));
+    loadNewSpineBtn.addEventListener("click", () => input.click());
   }
   async onFileSelected(input) {
     const files = Array.from(input.files || []);
+    let assets;
     try {
       const manager = new SpineUploadManager(files);
-      const assets = await manager.resolve();
+      assets = await manager.resolve();
       console.log("Skeleton:", assets.skeleton);
       console.log("Atlas:", assets.atlas);
       console.log("Textures:", assets.textures);
       await this.loadSpineAssets(assets);
-      const spineSkeletonData = await this.createSkeletonData();
-      const fileName = assets.skeleton.file.name.split(".")[0].replaceAll("_", " ");
+      const spineSkeletonData = await this.createSkeletonData(assets);
+      const fileName = assets.skeleton.file.name.split(".")[0];
       dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: { label: fileName, skeletonData: spineSkeletonData } }));
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load Spine assets", err);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      alert(`Error loading Spine assets: ${errorMessage}`);
+    } finally {
+      if (assets) {
+        this.revokeObjectUrls(assets);
+      }
     }
   }
   /**
    * Load uploaded Spine assets into Pixi and create a Spine instance
    */
   async loadSpineAssets(assets) {
-    Assets.add({ alias: "skeleton", src: assets.skeleton.url, parser: assets.skeleton.type });
-    Assets.add({ alias: "atlas", src: assets.atlas.url, parser: "text" });
     assets.textures.forEach((t2) => {
       Assets.add({ alias: t2.file.name, src: t2.url, parser: "texture" });
     });
-    await Assets.load([...assets.textures.map((t2) => t2.file.name), "skeleton", "atlas"]);
+    await Assets.load([...assets.textures.map((t2) => t2.file.name)]);
   }
-  async createSkeletonData() {
-    const skeletonJsonData = Assets.get("skeleton");
-    const atlasText = Assets.get("atlas");
+  async createSkeletonData(assets) {
+    const atlasText = await assets.atlas.file.text();
     const atlas = new TextureAtlas(atlasText);
     atlas.pages.forEach((page) => {
       const pixiTexture = Assets.get(page.name);
@@ -57502,44 +58044,107 @@ var AssetManager = class {
       page.setTexture(spineTexture);
     });
     const atlasLoader = new AtlasAttachmentLoader(atlas);
-    const skeletonJson = new SkeletonJson(atlasLoader);
-    const skeletonData = skeletonJson.readSkeletonData(skeletonJsonData);
+    const skeletonData = assets.skeleton.type === "binary" ? new SkeletonBinary(atlasLoader).readSkeletonData(new Uint8Array(await assets.skeleton.file.arrayBuffer())) : new SkeletonJson(atlasLoader).readSkeletonData(JSON.parse(await assets.skeleton.file.text()));
     return skeletonData;
+  }
+  revokeObjectUrls(assets) {
+    URL.revokeObjectURL(assets.skeleton.url);
+    URL.revokeObjectURL(assets.atlas.url);
+    assets.textures.forEach((texture) => {
+      URL.revokeObjectURL(texture.url);
+    });
   }
 };
 
 // source/ts/manager/UIManager.ts
 var UIManager = class {
   isFirstLoad = false;
-  canvasWidthInput;
-  canvasHeightInput;
+  autoCloseTimeoutId = null;
+  autoCloseDelayMs = 1e4;
+  canvasWidth;
+  canvasHeight;
+  canvasColor;
+  canvasSettingBtn;
+  canvasController;
   constructor() {
-    this.bindEvents();
     this.initializeElements();
+    this.bindEvents();
   }
   initializeElements() {
-    this.canvasWidthInput = document.getElementById("canvasWidth");
-    this.canvasHeightInput = document.getElementById("canvasHeight");
+    this.canvasSettingBtn = document.getElementsByClassName("canvasSettingBtn")[0];
+    this.canvasController = document.getElementsByClassName("canvasController")[0];
+    this.canvasController.classList.remove("is-open");
+    this.canvasSettingBtn.classList.remove("fa-times-circle");
+    this.canvasSettingBtn.classList.add("fa-cog");
   }
   bindEvents() {
     addEventListener("spineAssetsLoaded", (e2) => {
       !this.isFirstLoad && this.hideFirstLoadData();
     });
-    addEventListener("SCENE_READY", (e2) => {
-      const { canvasWidth, canvasHeight } = e2.detail;
-      this.canvasWidthInput.value = canvasWidth;
-      this.canvasHeightInput.value = canvasHeight;
-      this.canvasWidthInput.addEventListener("change", (e3) => {
-        const target = e3.target;
+    addEventListener("SCENE_READY", (evt) => {
+      const detail = evt.detail;
+      this.canvasWidth = document.getElementById("canvasWidth");
+      this.canvasHeight = document.getElementById("canvasHeight");
+      this.canvasColor = document.getElementById("canvasColor");
+      this.canvasWidth.value = detail.canvasProps.width.toString();
+      this.canvasHeight.value = detail.canvasProps.height.toString();
+      this.canvasWidth.addEventListener("change", (e2) => {
+        const target = e2.target;
+        const width = Number.parseInt(target.value);
         const canvas = spineViewer.stage.canvas;
-        canvas.style.width = `${Number.parseInt(target.value)}px`;
+        canvas.style.width = `${width}px`;
       });
-      this.canvasHeightInput.addEventListener("change", (e3) => {
-        const target = e3.target;
+      this.canvasHeight.addEventListener("change", (e2) => {
+        const target = e2.target;
+        const height = Number.parseInt(target.value);
         const canvas = spineViewer.stage.canvas;
-        canvas.style.height = `${Number.parseInt(target.value)}px`;
+        canvas.style.height = `${height}px`;
+      });
+      this.canvasColor.addEventListener("input", (e2) => {
+        const target = e2.target;
+        const color = Number.parseInt(target.value.replace("#", ""), 16);
+        const stage2 = spineViewer.stage;
+        if (stage2?.renderer?.background) {
+          stage2.renderer.background.color = color;
+        }
+      });
+      this.canvasColor.value = "#1099bb";
+    });
+    this.canvasSettingBtn.addEventListener("click", () => {
+      const isOpen = this.canvasController.classList.toggle("is-open");
+      this.canvasSettingBtn.classList.toggle("fa-cog", !isOpen);
+      this.canvasSettingBtn.classList.toggle("fa-times-circle", isOpen);
+      if (isOpen) {
+        this.scheduleCanvasAutoClose();
+      } else {
+        this.clearCanvasAutoCloseTimer();
+      }
+    });
+    ["mousedown", "mousemove", "keydown", "input", "touchstart"].forEach((eventName) => {
+      this.canvasController.addEventListener(eventName, () => {
+        if (this.canvasController.classList.contains("is-open")) {
+          this.scheduleCanvasAutoClose();
+        }
       });
     });
+  }
+  scheduleCanvasAutoClose() {
+    this.clearCanvasAutoCloseTimer();
+    this.autoCloseTimeoutId = globalThis.setTimeout(() => {
+      this.closeCanvasController();
+    }, this.autoCloseDelayMs);
+  }
+  clearCanvasAutoCloseTimer() {
+    if (this.autoCloseTimeoutId !== null) {
+      globalThis.clearTimeout(this.autoCloseTimeoutId);
+      this.autoCloseTimeoutId = null;
+    }
+  }
+  closeCanvasController() {
+    this.canvasController.classList.remove("is-open");
+    this.canvasSettingBtn.classList.remove("fa-times-circle");
+    this.canvasSettingBtn.classList.add("fa-cog");
+    this.clearCanvasAutoCloseTimer();
   }
   hideFirstLoadData() {
     this.isFirstLoad = true;
@@ -57550,21 +58155,27 @@ var UIManager = class {
     const stage2 = document.getElementById("stage");
     stage2.style.width = innerWidth / 2;
     stage2.style.height = innerHeight;
+    const spinesReferences = document.getElementsByClassName("controllerDiv")[0];
+    spinesReferences.style.display = "block";
   }
 };
 
 // source/ts/model/Model.ts
 var Model = class {
-  canvasDimension = {
-    width: innerWidth * 0.75,
-    height: innerHeight - (document.getElementById("footer")?.clientHeight ?? 0)
+  canvasDimensions = {
+    w: 1280,
+    h: this.getCanvasHeight()
   };
-  setCanvasDimension(newDimension) {
-    this.canvasDimension.width = newDimension.width;
-    this.canvasDimension.height = newDimension.height;
+  getCanvasHeight() {
+    const footerHeight = document.getElementById("footer")?.clientHeight ?? 0;
+    const availableHeight = window.innerHeight - footerHeight;
+    return Math.min(720, availableHeight);
   }
-  getCanvasDimension() {
-    return this.canvasDimension;
+  setCanvasDimensions(w2, h2) {
+    this.canvasDimensions = { w: w2, h: h2 };
+  }
+  getCanvasDimensions() {
+    return this.canvasDimensions;
   }
 };
 
@@ -57572,11 +58183,7 @@ var Model = class {
 console.log("setup ready!");
 var stageDIV = document.getElementById("stage") ?? document.body;
 var model = new Model();
-var stage = new SpineViewer(stageDIV, {
-  width: model.getCanvasDimension().width,
-  height: model.getCanvasDimension().height
-});
-new UIManager();
+var stage = new SpineViewer(stageDIV, { width: model.getCanvasDimensions().w, height: model.getCanvasDimensions().h });
 (async () => {
   globalThis.spineViewer = {
     stage: await stage.getStage(),
@@ -57585,6 +58192,7 @@ new UIManager();
     model
   };
 })();
+new UIManager();
 /*! Bundled license information:
 
 tiny-lru/dist/tiny-lru.js:

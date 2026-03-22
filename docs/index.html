@@ -4,8 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TS-Template</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <title>Spine-Viewer</title>
   <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/controller.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -15,48 +18,37 @@
     </div>
 
     <div class="spineStage">
-      <div class="controllerDiv">
-        <div id="spineController">
-          <div id="spineName"></div>
-          <div id="animationNameDIV">
-            <label for="animationSelect">Animations</label>
-          </div>
-          <div id="loopDIV">
-            <label for="loopCheckbox">Loop</label>
-            <input type="checkbox" id="loopCheckbox" name="loopCheckbox">
-          </div>
-          <div id="positionDIV">
-            <label for="positionDIV">Position</label>
-            <div>
-              <label for="xPos">X:</label>
-              <input type="number" id="xPos" name="xPos" value="0">
-              <label for="yPos">Y:</label>
-              <input type="number" id="yPos" name="yPos" value="0">
-            </div>
-          </div>
-          <div id="scaleDIV">
-            <label for="scale">Scale</label>
-            <div>
-              <label for="scaleX">X:</label>
-              <input type="number" id="scaleX" name="scaleX" value="1" step="0.1">
-              <label for="scaleY">Y:</label>
-              <input type="number" id="scaleY" name="scaleY" value="1" step="0.1">
-            </div>
-          </div>
-        </div>
-        <div id="stageController">
-          <div id="canvasDiv">
-            <label for="canvasDiv">Canvas</label>
-            <div>
-              <label for="canvasWidth">Width:</label>
-              <input type="number" id="canvasWidth" name="canvasWidth" value="1280">
-              <label for="canvasHeight">Height:</label>
-              <input type="number" id="canvasHeight" name="canvasHeight" value="720">
-            </div>
-          </div>
-        </div>
-      </div>
       <div id="stage"></div>
+    </div>
+
+    <div class="controllerDiv">
+      <div class="spinesReferences">
+        <select name="spineSelector" id="spineSelector">
+        </select>
+        <span id="addNewSpine"><i class="fa fa-plus-circle fa-2x" aria-hidden="true"></i></span>
+      </div>
+      <!-- Spine controllers will be dynamically added here -->
+    </div>
+
+    <div class="canvasSetting">
+      <div class="canvasController">
+        <fieldset id="canvasDiv">
+          <legend>Canvas</legend>
+
+          <div class="form-row">
+            <label for="canvasWidth">Width:</label>
+            <input type="number" id="canvasWidth" name="canvasWidth" value="1280">
+
+            <label for="canvasHeight">Height:</label>
+            <input type="number" id="canvasHeight" name="canvasHeight" value="720">
+
+            <label for="canvasColor">Color:</label>
+            <input type="color" id="canvasColor" name="canvasColor" value='#1099bb'>
+          </div>
+
+        </fieldset>
+      </div>
+      <i class="canvasSettingBtn fa fa-cog fa-2x" aria-hidden="true"></i>
     </div>
 
     <footer id="footer">@copyright 2025 sketer. All rights reserved.</footer>
