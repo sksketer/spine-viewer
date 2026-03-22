@@ -48,14 +48,14 @@ export class ControllerUI {
 
   version(): void {
     const versionDiv = document.createElement('div');
-    versionDiv.id = 'versionHolder';
+    versionDiv.classList.add('versionHolder');
     versionDiv.textContent = `Version: ${this.spineRef.version}`;
     this.mainDiv.appendChild(versionDiv);
   }
 
   nameHolder(): void {
     const nameDiv = document.createElement('div');
-    nameDiv.id = 'spineNameHolder';
+    nameDiv.classList.add('spineNameHolder');
     nameDiv.textContent = `${this.spineName.toString().toUpperCase()}`;
     this.mainDiv.appendChild(nameDiv);
     this.nameDiv = nameDiv;
@@ -64,11 +64,11 @@ export class ControllerUI {
   animations(): void {
     const animationDiv = document.createElement('div');
     const heading = document.createElement('span');
-    heading.id = "animationHeading";
+    heading.classList.add("animationHeading");
     heading.textContent = "Animations: ";
     animationDiv.appendChild(heading);
     const animationSelect = document.createElement('select');
-    animationSelect.id = "animationSelect";
+    animationSelect.classList.add("animationSelect");
     this.animationNames.forEach(name => {
       const option = document.createElement("option");
       option.value = name;
@@ -87,7 +87,7 @@ export class ControllerUI {
     loopDiv.appendChild(loopLabel);
     const loopCheckbox = document.createElement('input');
     loopCheckbox.type = "checkbox";
-    loopCheckbox.id = "loopCheckbox";
+    loopCheckbox.classList.add("loopCheckbox");
     loopDiv.appendChild(loopCheckbox);
     this.mainDiv.appendChild(loopDiv);
     this.loopCheckbox = loopCheckbox;
@@ -100,14 +100,14 @@ export class ControllerUI {
     xInputLabel.textContent = "X: ";
     positionDiv.appendChild(xInputLabel);
     const xInput = document.createElement('input');
-    xInput.id = "xPosition";
+    xInput.classList.add("xPosition");
     positionDiv.appendChild(xInput);
     // Y Input
     const yInputLabel = document.createElement('span');
     yInputLabel.textContent = "Y: ";
     positionDiv.appendChild(yInputLabel);
     const yInput = document.createElement('input');
-    yInput.id = "yPosition";
+    yInput.classList.add("yPosition");
     positionDiv.appendChild(yInput);
 
     this.mainDiv.appendChild(positionDiv);
@@ -122,14 +122,14 @@ export class ControllerUI {
     xInputLabel.textContent = "Scale X: ";
     scaleDiv.appendChild(xInputLabel);
     const xInput = document.createElement('input');
-    xInput.id = "xScale";
+    xInput.classList.add("xScale");
     scaleDiv.appendChild(xInput);
     // Y Input
     const yInputLabel = document.createElement('span');
     yInputLabel.textContent = "Scale Y: ";
     scaleDiv.appendChild(yInputLabel);
     const yInput = document.createElement('input');
-    yInput.id = "yScale";
+    yInput.classList.add("yScale");
     scaleDiv.appendChild(yInput);
 
     this.mainDiv.appendChild(scaleDiv);
@@ -140,7 +140,7 @@ export class ControllerUI {
   playOrPauseAnimation(): void {
     const playPauseDiv = document.createElement("div");
     const button = document.createElement("button");
-    button.id = "playPauseButton";
+    button.classList.add("playPauseButton");
     button.type = "button";
     button.textContent = "Pause";
     playPauseDiv.appendChild(button);

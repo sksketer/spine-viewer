@@ -10,7 +10,7 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-#spineNameHolder {
+.spineNameHolder {
   margin: 0;
   padding-bottom: 8px;
   border-bottom: 1px solid #e2e8f0;
@@ -20,7 +20,7 @@
   letter-spacing: 0.2px;
 }
 
-#versionHolder {
+.versionHolder {
   display: block;
   margin: 0;
   font-size: 12px;
@@ -29,7 +29,7 @@
   letter-spacing: 0.3px;
 }
 
-.controllerMainDiv>div:not(#spineNameHolder) {
+.controllerMainDiv>div:not(.spineNameHolder) {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -42,15 +42,15 @@
   font-weight: 600;
 }
 
-#animationHeading {
+.animationHeading {
   min-width: 80px;
 }
 
-#animationSelect,
-#xPosition,
-#yPosition,
-#xScale,
-#yScale {
+.animationSelect,
+.xPosition,
+.yPosition,
+.xScale,
+.yScale {
   min-width: 85px;
   padding: 6px 8px;
   border: 1px solid #cbd5e1;
@@ -62,23 +62,23 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-#animationSelect:focus,
-#xPosition:focus,
-#yPosition:focus,
-#xScale:focus,
-#yScale:focus {
+.animationSelect:focus,
+.xPosition:focus,
+.yPosition:focus,
+.xScale:focus,
+.yScale:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-#loopCheckbox {
+.loopCheckbox {
   width: 16px;
   height: 16px;
   accent-color: #2563eb;
   cursor: pointer;
 }
 
-#playPauseButton {
+.playPauseButton {
   min-width: 88px;
   padding: 7px 12px;
   border: 1px solid #60a5fa;
@@ -92,10 +92,10 @@
   transition: transform 0.12s ease, filter 0.2s ease;
 }
 
-#playPauseButton:hover {
+.playPauseButton:hover {
   filter: brightness(1.05);
 }
 
-#playPauseButton:active {
+.playPauseButton:active {
   transform: translateY(1px);
 }

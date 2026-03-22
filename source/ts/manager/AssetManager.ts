@@ -1,5 +1,5 @@
 import { Assets } from "pixi.js";
-import { TextureAtlas, AtlasAttachmentLoader, SkeletonJson, SpineTexture, SkeletonData } from "@esotericsoftware/spine-pixi-v8";
+import { TextureAtlas, AtlasAttachmentLoader, SkeletonBinary, SkeletonJson, SpineTexture, SkeletonData } from "@esotericsoftware/spine-pixi-v8";
 import type { ResolvedSpineAssets } from "../interfaces/AssetsInterfaces";
 import { SpineUploadManager } from "./SpineUploadManager";
 
@@ -17,46 +17,47 @@ export class AssetManager {
 
   async onFileSelected(input: HTMLInputElement): Promise<void> {
     const files = Array.from(input.files || []);
+    let assets: ResolvedSpineAssets | undefined;
 
     try {
       const manager = new SpineUploadManager(files);
-      const assets = await manager.resolve();
+      assets = await manager.resolve();
 
       console.log("Skeleton:", assets.skeleton);
       console.log("Atlas:", assets.atlas);
       console.log("Textures:", assets.textures);
 
       await this.loadSpineAssets(assets);
-      const spineSkeletonData = await this.createSkeletonData();
+      const spineSkeletonData = await this.createSkeletonData(assets);
 
       const fileName = assets.skeleton.file.name.split('.')[0].replaceAll('_', " ");
 
       dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: { label: fileName, skeletonData: spineSkeletonData } }));
     } catch (err) {
-      alert("Error loading Spine assets. Please check the console for details.");
-      throw new Error("Failed to load Spine assets", { cause: err });
+      console.error("Failed to load Spine assets", err);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      alert(`Error loading Spine assets: ${errorMessage}`);
+    } finally {
+      if (assets) {
+        this.revokeObjectUrls(assets);
+      }
     }
   }
   /**
    * Load uploaded Spine assets into Pixi and create a Spine instance
    */
   async loadSpineAssets(assets: ResolvedSpineAssets): Promise<void> {
-    // Register skeleton and atlas
-    Assets.add({ alias: "skeleton", src: assets.skeleton.url, parser: assets.skeleton.type });
-    Assets.add({ alias: "atlas", src: assets.atlas.url, parser: "text" });
-
     // Register all textures
     assets.textures.forEach((t) => {
       Assets.add({ alias: t.file.name, src: t.url, parser: "texture" });
     });
 
-    // Load all assets
-    await Assets.load([...assets.textures.map(t => t.file.name), "skeleton", "atlas"]);
+    // Load all textures referenced by atlas pages
+    await Assets.load([...assets.textures.map(t => t.file.name)]);
   }
 
-  async createSkeletonData(): Promise<SkeletonData> {
-    const skeletonJsonData = Assets.get("skeleton");
-    const atlasText = Assets.get("atlas");
+  async createSkeletonData(assets: ResolvedSpineAssets): Promise<SkeletonData> {
+    const atlasText = await assets.atlas.file.text();
     const atlas = new TextureAtlas(atlasText);
     atlas.pages.forEach((page: any) => {
       const pixiTexture = Assets.get(page.name);
@@ -70,9 +71,18 @@ export class AssetManager {
     });
 
     const atlasLoader = new AtlasAttachmentLoader(atlas);
-    const skeletonJson = new SkeletonJson(atlasLoader);
-    const skeletonData = skeletonJson.readSkeletonData(skeletonJsonData);
+    const skeletonData = assets.skeleton.type === "binary"
+      ? new SkeletonBinary(atlasLoader).readSkeletonData(new Uint8Array(await assets.skeleton.file.arrayBuffer()))
+      : new SkeletonJson(atlasLoader).readSkeletonData(JSON.parse(await assets.skeleton.file.text()));
 
     return skeletonData;
+  }
+
+  private revokeObjectUrls(assets: ResolvedSpineAssets): void {
+    URL.revokeObjectURL(assets.skeleton.url);
+    URL.revokeObjectURL(assets.atlas.url);
+    assets.textures.forEach((texture) => {
+      URL.revokeObjectURL(texture.url);
+    });
   }
 }

@@ -8,6 +8,22 @@ export class SpineController {
   private isPaused = false;
   private uiCreator: ControllerUI;
 
+  private readonly onPositionUpdated = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.updatePositionInputs();
+  };
+
+  private readonly onScaleUpdated = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.updateScaleInputs();
+  };
+
   constructor(spine: SVSpine) {
     this.spine = spine;
     this.animationNames = spine.skeleton.data.animations.map((a) => a.name);
@@ -26,8 +42,8 @@ export class SpineController {
     this.bindPositionHandler();
     this.bindScaleHandler();
     this.bindAnimationStatus();
-    addEventListener("SPINE_POSITION_UPDATED", this.updatePositionInputs.bind(this));
-    addEventListener("SPINE_SCALE_UPDATED", this.updateScaleInputs.bind(this));
+    addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
+    addEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
   }
 
   private bindAnimationHandler() {

@@ -102,7 +102,7 @@ export class SVSpine extends Spine {
 
       dispatchEvent(
         new CustomEvent("SPINE_POSITION_UPDATED", {
-          detail: { x: this.xPosition, y: this.yPosition }
+          detail: { spine: this, x: this.xPosition, y: this.yPosition }
         })
       );
     }
@@ -114,7 +114,7 @@ export class SVSpine extends Spine {
 
       dispatchEvent(
         new CustomEvent("SPINE_SCALE_UPDATED", {
-          detail: { x: this.xScale, y: this.yScale }
+          detail: { spine: this, x: this.xScale, y: this.yScale }
         })
       );
     }
