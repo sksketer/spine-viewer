@@ -26,10 +26,15 @@ export class UIManager {
       !this.isFirstLoad && this.hideFirstLoadData();
     });
 
-    addEventListener("SCENE_READY", () => {
+    addEventListener("SCENE_READY", (evt: Event) => {
+      const detail = (evt as CustomEvent).detail;
       this.canvasWidth = document.getElementById("canvasWidth") as HTMLInputElement;
       this.canvasHeight = document.getElementById("canvasHeight") as HTMLInputElement;
       this.canvasColor = document.getElementById("canvasColor") as HTMLInputElement;
+
+      this.canvasWidth.value = detail.canvasProps.width.toString();
+      this.canvasHeight.value = detail.canvasProps.height.toString();
+
       this.canvasWidth.addEventListener("change", (e) => {
         const target = e.target as HTMLInputElement;
         const width = Number.parseInt(target.value);

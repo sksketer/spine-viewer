@@ -39,7 +39,7 @@ export class SpineViewer {
     this.scene = new Container();
     this.scene.label = "Main Scene";
     this.stage?.stage.addChild(this.scene);
-    dispatchEvent(new CustomEvent("SCENE_READY", {}));
+    dispatchEvent(new CustomEvent("SCENE_READY", { detail: { canvasProps: { width: this.stage.canvas.width, height: this.stage.canvas.height } } }));
   }
 
   async getStage(): Promise<Application | undefined> {
