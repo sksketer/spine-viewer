@@ -30,7 +30,7 @@ export class AssetManager {
       await this.loadSpineAssets(assets);
       const spineSkeletonData = await this.createSkeletonData(assets);
 
-      const fileName = assets.skeleton.file.name.split('.')[0].replaceAll('_', " ");
+      const fileName = assets.skeleton.file.name.split('.')[0];
 
       dispatchEvent(new CustomEvent("spineAssetsLoaded", { detail: { label: fileName, skeletonData: spineSkeletonData } }));
     } catch (err) {

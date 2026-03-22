@@ -57,7 +57,7 @@ export class ControllerUI {
   nameHolder(): void {
     const nameDiv = document.createElement('div');
     nameDiv.classList.add('spineNameHolder');
-    nameDiv.textContent = `${this.spineName.toString().toUpperCase()}`;
+    nameDiv.textContent = `${this.spineName.toString().toUpperCase().replaceAll('_', " ")}`;
     this.mainDiv.appendChild(nameDiv);
     this.nameDiv = nameDiv;
   }
