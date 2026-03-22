@@ -3,18 +3,9 @@ import copy from "esbuild-plugin-copy";
 
 const isWatch = process.argv.includes("--watch");
 
-// function to get current timestamp
 function getTimestamp() {
   const now = new Date();
-
-  // Extract hours, minutes, and seconds
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-
-  // Combine into HH:MM:SS format
-  const timeString = `${hours}:${minutes}:${seconds}`;
-  return timeString;
+  return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 }
 
 const config = {
@@ -49,8 +40,16 @@ const config = {
 
 if (isWatch) {
   const ctx = await context(config);
+
   await ctx.watch();
-  console.log(`Watching with copy plugin 🚀 [${getTimestamp()}]`);
+
+  // ✅ ADD THIS PART
+  await ctx.serve({
+    servedir: "public",
+    port: 3000
+  });
+
+  console.log(`🚀 Server running at http://localhost:3000 [${getTimestamp()}]`);
 } else {
   await build(config);
   console.log(`Build complete 🚀 [${getTimestamp()}]`);
