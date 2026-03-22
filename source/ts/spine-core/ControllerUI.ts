@@ -28,7 +28,7 @@ export class ControllerUI {
     }
   }
 
-  async init(): Promise<void> {
+  init(): void {
     this.createMainDiv();
     this.nameHolder();
     this.version();

@@ -11,8 +11,10 @@ export class AssetManager {
 
   protected bindEvents() {
     const input = document.querySelector("#spineUpload") as unknown as HTMLInputElement;
+    const loadNewSpineBtn = document.querySelector("#addNewSpine") as unknown as HTMLSpanElement;
 
     input.addEventListener("change", this.onFileSelected.bind(this, input));
+    loadNewSpineBtn.addEventListener("click", () => input.click());
   }
 
   async onFileSelected(input: HTMLInputElement): Promise<void> {

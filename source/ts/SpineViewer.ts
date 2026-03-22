@@ -9,6 +9,8 @@ export class SpineViewer {
 
   private readonly parent?: HTMLElement;
   private readonly canvasProps?: ICanvasOptions;
+  private readonly spineInstances: Array<SVSpine> = [];
+  private isSpineSelectorBound = false;
   private scene: Container;
 
   constructor(parent: HTMLElement, canvasProps: ICanvasOptions) {
@@ -50,6 +52,7 @@ export class SpineViewer {
   }
 
   createSpine(spineData: ISVSpineData): void {
+    this.hideAllController();
     const spine = new SVSpine({
       ...spineData,
       x: (this.canvasProps?.width ?? 0) / 2,
@@ -57,5 +60,41 @@ export class SpineViewer {
       parentContainer: this.scene
     });
     console.log("Spine Name:", spine.label);
+    this.addSpineInstane(spine);
+    dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine: spine.label, visibility: true } }));
+  }
+
+  private addSpineInstane(spine: SVSpine): void {
+    this.spineInstances.push(spine);
+
+    const spinesReferences: any = document.getElementById("spineSelector") as HTMLSelectElement;
+    if (!spinesReferences) {
+      return;
+    }
+
+    const option = document.createElement("option");
+    option.value = spine.label;
+    option.text = spine.label;
+    spinesReferences.add(option);
+
+    if (!this.isSpineSelectorBound) {
+      spinesReferences.addEventListener("change", (e: Event) => {
+        const target = e.target as HTMLSelectElement;
+        this.hideAllController();
+        dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
+          detail: { spine: target.value, visibility: true }
+        }));
+      });
+      this.isSpineSelectorBound = true;
+    }
+
+    spinesReferences.value = spine.label;
+
+  }
+
+  private hideAllController(): void {
+    this.spineInstances.forEach(spine => {
+      dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", { detail: { spine: spine.label, visibility: false } }));
+    });
   }
 }

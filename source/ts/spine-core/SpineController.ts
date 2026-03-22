@@ -29,10 +29,10 @@ export class SpineController {
     this.animationNames = spine.skeleton.data.animations.map((a) => a.name);
   }
 
-  public async init(): Promise<void> {
+  public init(): void {
     this.isLooping = false;
     this.uiCreator = new ControllerUI(this.spine, this.animationNames);
-    await this.uiCreator.init();
+    this.uiCreator.init();
     this.bindHandlers();
   }
 
@@ -44,9 +44,18 @@ export class SpineController {
     this.bindAnimationStatus();
     addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
     addEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
+    addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.toggleControllerVisibility.bind(this));
   }
 
-  private bindAnimationHandler() {
+  private toggleControllerVisibility(e: Event): void {
+    const detail = (e as CustomEvent<{ spine: string, visibility: boolean }>).detail;
+    if (detail.spine !== this.spine.label) return;
+    // show controller only if the event is for this spine instance
+    const controllerDiv = this.uiCreator.getMainDiv();
+    controllerDiv.style.display = detail.visibility ? "grid" : "none";
+  }
+
+  private bindAnimationHandler(): void {
     const select = this.uiCreator.getAnimationSelect();
     select.addEventListener("change", (e) => {
       const target = e.target as HTMLSelectElement;
