@@ -1,60 +1,88 @@
 import { SVSpine } from "./SVSpine";
+import { ControllerUI } from "./ControllerUI";
 
 export class SpineController {
   private readonly spine: SVSpine;
   private readonly animationNames: Array<string>;
   private isLooping: boolean | undefined = undefined;
+  private isPaused = false;
+  private uiCreator: ControllerUI;
 
-  constructor(spine: SVSpine, animationName: Array<string>) {
+  private readonly onPositionUpdated = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.updatePositionInputs();
+  };
+
+  private readonly onScaleUpdated = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.updateScaleInputs();
+  };
+
+  private readonly onToggleVisibility = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine; visibility: boolean }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    const controllerDiv = this.uiCreator.getMainDiv();
+    controllerDiv.style.display = detail.visibility ? "grid" : "none";
+  };
+
+  private readonly onDestroyRequested = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine }>).detail;
+    if (detail?.spine !== this.spine) {
+      return;
+    }
+    this.dispose();
+  };
+
+  constructor(spine: SVSpine) {
     this.spine = spine;
-    this.animationNames = animationName;
-    this.init();
+    this.animationNames = spine.skeleton.data.animations.map((a) => a.name);
   }
 
-  private init(): void {
+  public init(): void {
     this.isLooping = false;
-    this.updateSpineName();
-    this.createAnimationSelect();
+    this.uiCreator = new ControllerUI(this.spine, this.animationNames);
+    this.uiCreator.init();
     this.bindHandlers();
-  }
-
-  private updateSpineName(): void {
-    const spineNameDiv = document.getElementById("spineName") as unknown as HTMLDivElement;
-    spineNameDiv.textContent = this.spine.label;
   }
 
   private bindHandlers(): void {
     this.bindAnimationHandler();
     this.bindLoopHandler();
+    this.bindVisibilityHandler();
+    this.bindAlphaHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
+    this.bindAnimationStatus();
+    this.bindDestroyHandler();
+    addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
+    addEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
+    addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
+    addEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
   }
 
-  private createAnimationSelect(): void {
-    const animationNameDIV = document.getElementById("animationNameDIV") as unknown as HTMLDivElement;
-    const select = document.createElement("select");
-    select.id = "animationSelect";
-    this.animationNames.forEach((name) => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.text = name;
-      select.appendChild(option);
-    });
-    animationNameDIV.appendChild(select);
-  }
-
-  private bindAnimationHandler() {
-    const select = document.getElementById("animationSelect") as HTMLSelectElement;
+  private bindAnimationHandler(): void {
+    const select = this.uiCreator.getAnimationSelect();
     select.addEventListener("change", (e) => {
       const target = e.target as HTMLSelectElement;
       const animationName = target.value;
+      this.isPaused = false;
+      this.spine.state.timeScale = 1;
+      this.uiCreator.setPlayPauseState(this.isPaused);
       this.spine.playAnimation(animationName, this.isLooping);
     });
 
   }
 
   private bindLoopHandler(): void {
-    const loopButton = document.getElementById("loopCheckbox") as HTMLInputElement;
+    const loopButton = this.uiCreator.getLoopCheckbox();
     loopButton.checked = false;
     loopButton.addEventListener("change", (e) => {
       const target = e.target as HTMLInputElement;
@@ -66,27 +94,58 @@ export class SpineController {
     });
   }
 
+  private bindVisibilityHandler(): void {
+    const visibilityCheckbox = this.uiCreator.getVisibilityCheckbox();
+    visibilityCheckbox.checked = this.spine.visible;
+    visibilityCheckbox.addEventListener("change", (e) => {
+      const target = e.target as HTMLInputElement;
+      this.spine.visible = target.checked;
+    });
+  }
+
+  private bindAlphaHandler(): void {
+    const alphaInput = this.uiCreator.getAlphaInput();
+    alphaInput.value = this.spine.alpha.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    alphaInput.addEventListener("input", (e) => {
+      const target = e.target as HTMLInputElement;
+      const alphaValue = Number.parseFloat(target.value);
+      if (Number.isNaN(alphaValue)) {
+        return;
+      }
+      const clampedAlpha = Math.max(0, Math.min(1, alphaValue));
+      this.spine.alpha = clampedAlpha;
+      target.value = clampedAlpha.toString();
+    });
+  }
+
   private bindPositionHandler(): void {
-    const xPositionDiv = document.getElementById("xPos") as HTMLInputElement;
-    xPositionDiv.value = this.spine.x.toString();
-    xPositionDiv.addEventListener("input", (e) => {
+    const xPositionInput = this.uiCreator.getXPositionInput();
+    xPositionInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const x = Number.parseFloat(target.value) || 0;
       this.spine.x = x;
     });
 
-    const yPositionDiv = document.getElementById("yPos") as HTMLInputElement;
-    yPositionDiv.value = this.spine.y.toString();
-    yPositionDiv.addEventListener("input", (e) => {
+    const yPositionInput = this.uiCreator.getYPositionInput();
+    yPositionInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const y = Number.parseFloat(target.value) || 0;
       this.spine.y = y;
     });
+
+    this.updatePositionInputs();
+  }
+
+  private updatePositionInputs(): void {
+    const xPositionInput = this.uiCreator.getXPositionInput();
+    const yPositionInput = this.uiCreator.getYPositionInput();
+    xPositionInput.value = this.spine.x.toString();
+    yPositionInput.value = this.spine.y.toString();
   }
 
   private bindScaleHandler(): void {
-    const scaleXInput = document.getElementById("scaleX") as HTMLInputElement;
-    const scaleYInput = document.getElementById("scaleY") as HTMLInputElement;
+    const scaleXInput = this.uiCreator.getXScaleInput();
+    const scaleYInput = this.uiCreator.getYScaleInput();
 
     scaleXInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
@@ -99,5 +158,42 @@ export class SpineController {
       const scaleY = Number.parseFloat(target.value) || 1;
       this.spine.scale.set(this.spine.scale.x, scaleY);
     });
+
+    this.updateScaleInputs();
+  }
+
+  private updateScaleInputs(): void {
+    const scaleXInput = this.uiCreator.getXScaleInput();
+    const scaleYInput = this.uiCreator.getYScaleInput();
+    scaleXInput.value = this.spine.scale.x.toString();
+    scaleYInput.value = this.spine.scale.y.toString();
+  }
+
+  private bindAnimationStatus(): void {
+    const playPauseButton = this.uiCreator.getPlayPauseButton();
+    this.uiCreator.setPlayPauseState(this.isPaused);
+
+    playPauseButton.addEventListener("click", () => {
+      this.isPaused = !this.isPaused;
+      this.spine.state.timeScale = this.isPaused ? 0 : 1;
+      this.uiCreator.setPlayPauseState(this.isPaused);
+    });
+  }
+
+  private bindDestroyHandler(): void {
+    const destroyButton = this.uiCreator.getDestroyButton();
+    destroyButton.addEventListener("click", () => {
+      dispatchEvent(new CustomEvent("SPINE_DESTROY_REQUESTED", {
+        detail: { spine: this.spine }
+      }));
+    });
+  }
+
+  private dispose(): void {
+    removeEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
+    removeEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
+    removeEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
+    removeEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    this.uiCreator.getMainDiv().remove();
   }
 }

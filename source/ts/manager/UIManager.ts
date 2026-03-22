@@ -1,48 +1,119 @@
 export class UIManager {
   private isFirstLoad = false;
-  private canvasWidthInput: HTMLInputElement;
-  private canvasHeightInput: HTMLInputElement;
+  private autoCloseTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private readonly autoCloseDelayMs = 10000;
+  private canvasWidth: HTMLInputElement;
+  private canvasHeight: HTMLInputElement;
+  private canvasColor: HTMLInputElement;
+  private canvasSettingBtn: HTMLElement;
+  private canvasController: HTMLDivElement;
 
   constructor() {
-    this.bindEvents();
     this.initializeElements();
+    this.bindEvents();
   }
 
   initializeElements(): void {
-    this.canvasWidthInput = document.getElementById("canvasWidth") as HTMLInputElement;
-    this.canvasHeightInput = document.getElementById("canvasHeight") as HTMLInputElement;
+    this.canvasSettingBtn = document.getElementsByClassName("canvasSettingBtn")[0] as HTMLElement;
+    this.canvasController = document.getElementsByClassName("canvasController")[0] as HTMLDivElement;
+    this.canvasController.classList.remove("is-open");
+    this.canvasSettingBtn.classList.remove("fa-times-circle");
+    this.canvasSettingBtn.classList.add("fa-cog");
   }
 
   bindEvents(): void {
     addEventListener("spineAssetsLoaded", (e: Event) => {
       !this.isFirstLoad && this.hideFirstLoadData();
     });
-    addEventListener("SCENE_READY", (e: Event) => {
-      const { canvasWidth, canvasHeight } = (e as any).detail;
-      this.canvasWidthInput.value = canvasWidth;
-      this.canvasHeightInput.value = canvasHeight;
-      this.canvasWidthInput.addEventListener("change", (e) => {
+
+    addEventListener("SCENE_READY", (evt: Event) => {
+      const detail = (evt as CustomEvent).detail;
+      this.canvasWidth = document.getElementById("canvasWidth") as HTMLInputElement;
+      this.canvasHeight = document.getElementById("canvasHeight") as HTMLInputElement;
+      this.canvasColor = document.getElementById("canvasColor") as HTMLInputElement;
+
+      this.canvasWidth.value = detail.canvasProps.width.toString();
+      this.canvasHeight.value = detail.canvasProps.height.toString();
+
+      this.canvasWidth.addEventListener("change", (e) => {
         const target = e.target as HTMLInputElement;
-        const canvas = spineViewer.stage.canvas;
-        canvas.style.width = `${Number.parseInt(target.value)}px`;
+        const width = Number.parseInt(target.value);
+        const canvas: any = spineViewer.stage.canvas;
+        canvas.style.width = `${width}px`;
       });
-      this.canvasHeightInput.addEventListener("change", (e) => {
+      this.canvasHeight.addEventListener("change", (e) => {
         const target = e.target as HTMLInputElement;
-        const canvas = spineViewer.stage.canvas;
-        canvas.style.height = `${Number.parseInt(target.value)}px`;});
+        const height = Number.parseInt(target.value);
+        const canvas: any = spineViewer.stage.canvas;
+        canvas.style.height = `${height}px`;
+      });
+      this.canvasColor.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement;
+        const color = Number.parseInt(target.value.replace("#", ""), 16);
+        const stage: any = spineViewer.stage;
+        if (stage?.renderer?.background) {
+          stage.renderer.background.color = color;
+        }
+      });
+      this.canvasColor.value = '#1099bb';
     });
+    this.canvasSettingBtn.addEventListener("click", () => {
+      const isOpen = this.canvasController.classList.toggle("is-open");
+      this.canvasSettingBtn.classList.toggle("fa-cog", !isOpen);
+      this.canvasSettingBtn.classList.toggle("fa-times-circle", isOpen);
+      if (isOpen) {
+        this.scheduleCanvasAutoClose();
+      } else {
+        this.clearCanvasAutoCloseTimer();
+      }
+    });
+
+    ["mousedown", "mousemove", "keydown", "input", "touchstart"].forEach((eventName) => {
+      this.canvasController.addEventListener(eventName, () => {
+        if (this.canvasController.classList.contains("is-open")) {
+          this.scheduleCanvasAutoClose();
+        }
+      });
+    });
+  }
+
+  private scheduleCanvasAutoClose(): void {
+    this.clearCanvasAutoCloseTimer();
+    this.autoCloseTimeoutId = globalThis.setTimeout(() => {
+      this.closeCanvasController();
+    }, this.autoCloseDelayMs);
+  }
+
+  private clearCanvasAutoCloseTimer(): void {
+    if (this.autoCloseTimeoutId !== null) {
+      globalThis.clearTimeout(this.autoCloseTimeoutId);
+      this.autoCloseTimeoutId = null;
+    }
+  }
+
+  private closeCanvasController(): void {
+    this.canvasController.classList.remove("is-open");
+    this.canvasSettingBtn.classList.remove("fa-times-circle");
+    this.canvasSettingBtn.classList.add("fa-cog");
+    this.clearCanvasAutoCloseTimer();
   }
 
   hideFirstLoadData(): void {
     this.isFirstLoad = true;
 
+    // hide upload container
     const uploadContainer: any = document.getElementsByClassName("upload-container")[0];
     uploadContainer.style.display = "none";
 
+    // show spine stage and controller
     const spineStage: any = document.getElementsByClassName("spineStage")[0];
     spineStage.style.display = "flex";
+    // set canvas to half of the window width and full height
     const stage: any = document.getElementById("stage");
     stage.style.width = innerWidth / 2;
     stage.style.height = innerHeight;
+    // show spine controller on first load
+    const spinesReferences: any = document.getElementsByClassName("controllerDiv")[0];
+    spinesReferences.style.display = "block";
   }
 }

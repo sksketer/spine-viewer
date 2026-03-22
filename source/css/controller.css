@@ -1,0 +1,162 @@
+.controllerMainDiv {
+  display: none;
+  gap: 10px;
+  width: min(100%, 360px);
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.spineNameHolder {
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.versionHolder {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  letter-spacing: 0.3px;
+}
+
+.controllerMainDiv>div:not(.spineNameHolder) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.controllerMainDiv span {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.controllerMainDiv>div.positionGroup,
+.controllerMainDiv>div.scaleGroup {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.controllerFieldRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controllerFieldRow span {
+  min-width: 60px;
+}
+
+.controllerFieldRow .xPosition,
+.controllerFieldRow .yPosition,
+.controllerFieldRow .xScale,
+.controllerFieldRow .yScale {
+  flex: 0.5;
+  min-width: 0;
+}
+
+.animationHeading {
+  min-width: 80px;
+}
+
+.animationSelect,
+.xPosition,
+.yPosition,
+.xScale,
+.yScale {
+  min-width: 85px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.animationSelect:focus,
+.xPosition:focus,
+.yPosition:focus,
+.xScale:focus,
+.yScale:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.loopCheckbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.visibilityCheckbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #38bdf8;
+  cursor: pointer;
+}
+
+.alphaInput {
+  width: 76px;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+}
+
+.alphaInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.playPauseButton {
+  min-width: 88px;
+  padding: 7px 12px;
+  border: 1px solid #60a5fa;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #000000;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.2s ease;
+}
+
+.playPauseButton:hover {
+  filter: brightness(1.05);
+}
+
+.playPauseButton:active {
+  transform: translateY(1px);
+}
+
+.destroyButton {
+  min-width: 88px;
+  padding: 7px 12px;
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  color: #000000;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.destroyButton:hover {
+  filter: brightness(1.05);
+}

@@ -45,7 +45,7 @@ if (isWatch) {
 
   // ✅ ADD THIS PART
   await ctx.serve({
-    servedir: "public",
+    servedir: "docs",
     port: 3000
   });
 

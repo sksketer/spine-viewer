@@ -14,17 +14,15 @@ declare global {
 
 const stageDIV = (document.getElementById("stage") ?? document.body);
 const model = new Model();
-const stage = new SpineViewer(stageDIV, {
-  width: model.getCanvasDimension().width,
-  height: model.getCanvasDimension().height 
-});
-new UIManager();
+const stage = new SpineViewer(stageDIV, { width: model.getCanvasDimensions().w, height: model.getCanvasDimensions().h });
 
 (async () => {
   globalThis.spineViewer = {
     stage: await stage.getStage(),
     spineData: [] as Array<ISpineData>,
     assetsManager: new AssetManager(),
-    model
+    model: model
   };
 })();
+
+new UIManager();

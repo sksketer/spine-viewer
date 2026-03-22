@@ -12,5 +12,6 @@ export interface ResolvedSpineAssets {
   textures: {
     file: File;
     url: string;
+    type: "png" | "jpg" | "jpeg";
   }[];
 }
