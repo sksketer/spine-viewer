@@ -42,6 +42,7 @@ export class ControllerUI {
   createMainDiv(): void {
     const mainDiv = document.createElement('div');
     mainDiv.classList.add("controllerMainDiv");
+    mainDiv.id = `controller-${this.spineName.toLowerCase()}`;
     this.parentDiv.appendChild(mainDiv);
     this.mainDiv = mainDiv;
   }
