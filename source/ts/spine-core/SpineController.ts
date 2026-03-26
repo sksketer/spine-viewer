@@ -58,6 +58,7 @@ export class SpineController {
     this.bindLoopHandler();
     this.bindVisibilityHandler();
     this.bindAlphaHandler();
+    this.bindAnimationSpeedHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
     this.bindAnimationStatus();
@@ -116,6 +117,22 @@ export class SpineController {
       this.spine.alpha = clampedAlpha;
       target.value = clampedAlpha.toString();
     });
+  }
+
+  private bindAnimationSpeedHandler(): void {
+    const speedInput = this.uiCreator.getAnimationSpeedInput();
+    speedInput.value = this.spine.state.timeScale.toString();
+    speedInput.addEventListener("input", (e) => {
+      const target = e.target as HTMLInputElement;
+      const speed = Math.round(Number.parseFloat(target.value) * 10) / 10;
+      this.spine.state.timeScale = speed;
+      this.updateAnimationSpeedLabel(speed);
+    });
+  }
+
+  private updateAnimationSpeedLabel(speed: number): void {
+    const speedValueLabel = this.uiCreator.getAnimationSpeedValueLabel();
+    speedValueLabel.textContent = `${speed}x`;
   }
 
   private bindPositionHandler(): void {

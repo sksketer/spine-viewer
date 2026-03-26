@@ -73,6 +73,17 @@
   min-width: 0;
 }
 
+.toggleOptionsRow {
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.toggleOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .animationHeading {
   min-width: 80px;
 }
@@ -169,4 +180,29 @@
 
 .destroyButton:hover {
   filter: brightness(1.05);
+}
+
+.resetPositionButton,
+.resetScaleButton {
+  width: 100%;
+  padding: 6px 10px;
+  margin-top: 4px;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.2s ease;
+}
+
+.resetPositionButton:hover,
+.resetScaleButton:hover {
+  filter: brightness(1.1);
+}
+
+.resetPositionButton:active,
+.resetScaleButton:active {
+  transform: translateY(1px);
 }

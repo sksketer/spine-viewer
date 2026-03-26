@@ -14,6 +14,8 @@ export class ControllerUI {
   private loopCheckbox: HTMLInputElement;
   private visibilityCheckbox: HTMLInputElement;
   private alphaInput: HTMLInputElement;
+  private animationSpeedInput: HTMLInputElement;
+  private animationSpeedValueLabel: HTMLSpanElement;
   private destroyButton: HTMLButtonElement;
   private xPositionInput: HTMLInputElement;
   private yPositionInput: HTMLInputElement;
@@ -40,6 +42,7 @@ export class ControllerUI {
     this.looping();
     this.visibility();
     this.alpha();
+    this.animationSpeed();
     this.positions();
     this.scales();
     this.destroy();
@@ -129,6 +132,28 @@ export class ControllerUI {
     alphaDiv.appendChild(alphaInput);
     this.mainDiv.appendChild(alphaDiv);
     this.alphaInput = alphaInput;
+  }
+
+  animationSpeed(): void {
+    const speedDiv = document.createElement('div');
+    const speedLabel = document.createElement('span');
+    speedLabel.textContent = "Animation Speed: ";
+    speedDiv.appendChild(speedLabel);
+    const speedInput = document.createElement('input');
+    speedInput.type = "range";
+    speedInput.min = "0.1";
+    speedInput.step = "0.1";
+    speedInput.value = "1";
+    speedInput.max = "5";
+    speedInput.classList.add("animationSpeedInput");
+    const speedValueLabel = document.createElement('span');
+    speedValueLabel.classList.add("speedValueLabel");
+    speedValueLabel.textContent = "1.0x";
+    speedDiv.appendChild(speedInput);
+    speedDiv.appendChild(speedValueLabel);
+    this.mainDiv.appendChild(speedDiv);
+    this.animationSpeedInput = speedInput;
+    this.animationSpeedValueLabel = speedValueLabel;
   }
 
   positions(): void {
@@ -233,6 +258,14 @@ export class ControllerUI {
 
   getAlphaInput(): HTMLInputElement {
     return this.alphaInput;
+  }
+
+  getAnimationSpeedInput(): HTMLInputElement {
+    return this.animationSpeedInput;
+  }
+
+  getAnimationSpeedValueLabel(): HTMLSpanElement {
+    return this.animationSpeedValueLabel;
   }
 
   getPlayPauseButton(): HTMLButtonElement {
