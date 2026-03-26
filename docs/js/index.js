@@ -57194,11 +57194,15 @@ var ControllerUI = class {
   loopCheckbox;
   visibilityCheckbox;
   alphaInput;
+  animationSpeedInput;
+  animationSpeedValueLabel;
   destroyButton;
   xPositionInput;
   yPositionInput;
   xScaleInput;
   yScaleInput;
+  resetPositionButton;
+  resetScaleButton;
   constructor(spineRef, animationNames, parentDiv) {
     this.spineRef = spineRef;
     this.spineName = spineRef.label;
@@ -57215,9 +57219,9 @@ var ControllerUI = class {
     this.version();
     this.animations();
     this.playOrPauseAnimation();
-    this.looping();
-    this.visibility();
+    this.toggleOptions();
     this.alpha();
+    this.animationSpeed();
     this.positions();
     this.scales();
     this.destroy();
@@ -57260,8 +57264,11 @@ var ControllerUI = class {
     this.mainDiv.appendChild(animationDiv);
     this.animationSelect = animationSelect;
   }
-  looping() {
+  toggleOptions() {
+    const togglesDiv = document.createElement("div");
+    togglesDiv.classList.add("toggleOptionsRow");
     const loopDiv = document.createElement("div");
+    loopDiv.classList.add("toggleOption");
     const loopLabel = document.createElement("span");
     loopLabel.textContent = "Loop: ";
     loopDiv.appendChild(loopLabel);
@@ -57269,11 +57276,9 @@ var ControllerUI = class {
     loopCheckbox.type = "checkbox";
     loopCheckbox.classList.add("loopCheckbox");
     loopDiv.appendChild(loopCheckbox);
-    this.mainDiv.appendChild(loopDiv);
-    this.loopCheckbox = loopCheckbox;
-  }
-  visibility() {
+    togglesDiv.appendChild(loopDiv);
     const visibilityDiv = document.createElement("div");
+    visibilityDiv.classList.add("toggleOption");
     const visibilityLabel = document.createElement("span");
     visibilityLabel.textContent = "Visible: ";
     visibilityDiv.appendChild(visibilityLabel);
@@ -57282,7 +57287,9 @@ var ControllerUI = class {
     visibilityCheckbox.checked = true;
     visibilityCheckbox.classList.add("visibilityCheckbox");
     visibilityDiv.appendChild(visibilityCheckbox);
-    this.mainDiv.appendChild(visibilityDiv);
+    togglesDiv.appendChild(visibilityDiv);
+    this.mainDiv.appendChild(togglesDiv);
+    this.loopCheckbox = loopCheckbox;
     this.visibilityCheckbox = visibilityCheckbox;
   }
   alpha() {
@@ -57301,9 +57308,34 @@ var ControllerUI = class {
     this.mainDiv.appendChild(alphaDiv);
     this.alphaInput = alphaInput;
   }
+  animationSpeed() {
+    const speedDiv = document.createElement("div");
+    const speedLabel = document.createElement("span");
+    speedLabel.textContent = "Animation Speed: ";
+    speedDiv.appendChild(speedLabel);
+    const speedInput = document.createElement("input");
+    speedInput.type = "range";
+    speedInput.min = "0.1";
+    speedInput.step = "0.1";
+    speedInput.value = "1";
+    speedInput.max = "5";
+    speedInput.classList.add("animationSpeedInput");
+    const speedValueLabel = document.createElement("span");
+    speedValueLabel.classList.add("speedValueLabel");
+    speedValueLabel.textContent = "1.0x";
+    speedDiv.appendChild(speedInput);
+    speedDiv.appendChild(speedValueLabel);
+    this.mainDiv.appendChild(speedDiv);
+    this.animationSpeedInput = speedInput;
+    this.animationSpeedValueLabel = speedValueLabel;
+  }
   positions() {
     const positionDiv = document.createElement("div");
     positionDiv.classList.add("positionGroup");
+    const positionHeading = document.createElement("span");
+    positionHeading.classList.add("groupHeading");
+    positionHeading.textContent = "Position";
+    positionDiv.appendChild(positionHeading);
     const xRow = document.createElement("div");
     xRow.classList.add("controllerFieldRow");
     const xInputLabel = document.createElement("span");
@@ -57322,17 +57354,27 @@ var ControllerUI = class {
     yInput.classList.add("yPosition");
     yRow.appendChild(yInput);
     positionDiv.appendChild(yRow);
+    const resetPositionButton = document.createElement("button");
+    resetPositionButton.type = "button";
+    resetPositionButton.classList.add("resetPositionButton");
+    resetPositionButton.textContent = "Reset Position";
+    positionDiv.appendChild(resetPositionButton);
     this.mainDiv.appendChild(positionDiv);
     this.xPositionInput = xInput;
     this.yPositionInput = yInput;
+    this.resetPositionButton = resetPositionButton;
   }
   scales() {
     const scaleDiv = document.createElement("div");
     scaleDiv.classList.add("scaleGroup");
+    const scaleHeading = document.createElement("span");
+    scaleHeading.classList.add("groupHeading");
+    scaleHeading.textContent = "Scale";
+    scaleDiv.appendChild(scaleHeading);
     const scaleXRow = document.createElement("div");
     scaleXRow.classList.add("controllerFieldRow");
     const xInputLabel = document.createElement("span");
-    xInputLabel.textContent = "Scale X: ";
+    xInputLabel.textContent = "X: ";
     scaleXRow.appendChild(xInputLabel);
     const xInput = document.createElement("input");
     xInput.classList.add("xScale");
@@ -57341,15 +57383,21 @@ var ControllerUI = class {
     const scaleYRow = document.createElement("div");
     scaleYRow.classList.add("controllerFieldRow");
     const yInputLabel = document.createElement("span");
-    yInputLabel.textContent = "Scale Y: ";
+    yInputLabel.textContent = "Y: ";
     scaleYRow.appendChild(yInputLabel);
     const yInput = document.createElement("input");
     yInput.classList.add("yScale");
     scaleYRow.appendChild(yInput);
     scaleDiv.appendChild(scaleYRow);
+    const resetScaleButton = document.createElement("button");
+    resetScaleButton.type = "button";
+    resetScaleButton.classList.add("resetScaleButton");
+    resetScaleButton.textContent = "Reset Scale";
+    scaleDiv.appendChild(resetScaleButton);
     this.mainDiv.appendChild(scaleDiv);
     this.xScaleInput = xInput;
     this.yScaleInput = yInput;
+    this.resetScaleButton = resetScaleButton;
   }
   playOrPauseAnimation() {
     const playPauseDiv = document.createElement("div");
@@ -57389,6 +57437,12 @@ var ControllerUI = class {
   getAlphaInput() {
     return this.alphaInput;
   }
+  getAnimationSpeedInput() {
+    return this.animationSpeedInput;
+  }
+  getAnimationSpeedValueLabel() {
+    return this.animationSpeedValueLabel;
+  }
   getPlayPauseButton() {
     return this.playPauseButton;
   }
@@ -57409,6 +57463,12 @@ var ControllerUI = class {
   }
   getMainDiv() {
     return this.mainDiv;
+  }
+  getResetPositionButton() {
+    return this.resetPositionButton;
+  }
+  getResetScaleButton() {
+    return this.resetScaleButton;
   }
 };
 
@@ -57463,8 +57523,11 @@ var SpineController = class {
     this.bindLoopHandler();
     this.bindVisibilityHandler();
     this.bindAlphaHandler();
+    this.bindAnimationSpeedHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
+    this.bindResetPositionHandler();
+    this.bindResetScaleHandler();
     this.bindAnimationStatus();
     this.bindDestroyHandler();
     addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
@@ -57517,6 +57580,20 @@ var SpineController = class {
       target.value = clampedAlpha.toString();
     });
   }
+  bindAnimationSpeedHandler() {
+    const speedInput = this.uiCreator.getAnimationSpeedInput();
+    speedInput.value = this.spine.state.timeScale.toString();
+    speedInput.addEventListener("input", (e2) => {
+      const target = e2.target;
+      const speed = Math.round(Number.parseFloat(target.value) * 10) / 10;
+      this.spine.state.timeScale = speed;
+      this.updateAnimationSpeedLabel(speed);
+    });
+  }
+  updateAnimationSpeedLabel(speed) {
+    const speedValueLabel = this.uiCreator.getAnimationSpeedValueLabel();
+    speedValueLabel.textContent = `${speed}x`;
+  }
   bindPositionHandler() {
     const xPositionInput = this.uiCreator.getXPositionInput();
     xPositionInput.addEventListener("input", (e2) => {
@@ -57535,8 +57612,8 @@ var SpineController = class {
   updatePositionInputs() {
     const xPositionInput = this.uiCreator.getXPositionInput();
     const yPositionInput = this.uiCreator.getYPositionInput();
-    xPositionInput.value = this.spine.x.toString();
-    yPositionInput.value = this.spine.y.toString();
+    xPositionInput.value = this.spine.x.toFixed(2);
+    yPositionInput.value = this.spine.y.toFixed(2);
   }
   bindScaleHandler() {
     const scaleXInput = this.uiCreator.getXScaleInput();
@@ -57556,8 +57633,26 @@ var SpineController = class {
   updateScaleInputs() {
     const scaleXInput = this.uiCreator.getXScaleInput();
     const scaleYInput = this.uiCreator.getYScaleInput();
-    scaleXInput.value = this.spine.scale.x.toString();
-    scaleYInput.value = this.spine.scale.y.toString();
+    scaleXInput.value = this.spine.scale.x.toFixed(2);
+    scaleYInput.value = this.spine.scale.y.toFixed(2);
+  }
+  bindResetPositionHandler() {
+    const resetPositionButton = this.uiCreator.getResetPositionButton();
+    resetPositionButton.addEventListener("click", () => {
+      const app = globalThis.__PIXI_APP__;
+      const centerX = app.canvas.width / 2;
+      const centerY = app.canvas.height / 2;
+      this.spine.x = centerX;
+      this.spine.y = centerY;
+      this.updatePositionInputs();
+    });
+  }
+  bindResetScaleHandler() {
+    const resetScaleButton = this.uiCreator.getResetScaleButton();
+    resetScaleButton.addEventListener("click", () => {
+      this.spine.scale.set(1, 1);
+      this.updateScaleInputs();
+    });
   }
   bindAnimationStatus() {
     const playPauseButton = this.uiCreator.getPlayPauseButton();
@@ -57610,7 +57705,7 @@ var SVSpine = class extends Spine {
   updateProperties(spineData) {
     this.setPosition(spineData?.x ?? 0, spineData?.y ?? 0);
     this.setScale(spineData?.scale ?? 1);
-    this.setParent(spineData?.parentContainer ?? globalThis.__PIXI_APP__.stage);
+    this.setParent(spineData?.parentContainer ?? spineViewer.stage?.stage);
     this.label = spineData.label ?? "Unnamed Spine";
   }
   initializeController() {
@@ -57628,12 +57723,12 @@ var SVSpine = class extends Spine {
     this.skeleton.setSlotsToSetupPose();
   }
   setPosition(x2, y2) {
-    this.xPosition = this.x = x2;
-    this.yPosition = this.y = y2;
+    this.x = Number(x2.toFixed(2));
+    this.y = Number(y2.toFixed(2));
   }
   setScale(scale) {
-    this.scale.set(scale);
-    this.xScale = this.yScale = scale;
+    const fixedScale = Number(scale.toFixed(2));
+    this.scale.set(fixedScale);
   }
   setParent(parentContainer) {
     parentContainer?.addChild(this);
@@ -57666,12 +57761,12 @@ var SVSpine = class extends Spine {
   // ✅ START WATCHING (Ticker-based)
   startWatching() {
     this._tickerFn = this.updateOnChangeProperties.bind(this);
-    const ticker = globalThis.__PIXI_APP__.ticker;
+    const ticker = spineViewer.stage?.ticker;
     ticker.add(this._tickerFn);
   }
   // ✅ STOP WATCHING (important for cleanup)
   destroy(options) {
-    const ticker = globalThis.__PIXI_APP__.ticker;
+    const ticker = spineViewer.stage?.ticker;
     ticker.remove(this._tickerFn);
     this.removeAllListeners();
     super.destroy(options);
@@ -57739,7 +57834,7 @@ var SpineViewer = class {
       return;
     }
     e2.preventDefault();
-    const currentScale = this.activeSpine.scale.x;
+    const currentScale = Math.round(this.activeSpine.scale.x * 100) / 100;
     const nextScale = Math.max(0.1, Math.min(10, currentScale - e2.deltaY * 15e-4));
     this.activeSpine.scale.set(nextScale);
   };
