@@ -1,7 +1,7 @@
 .controllerMainDiv {
   display: none;
   gap: 10px;
-  width: min(100%, 360px);
+  width: min(100%, 300px);
   padding: 14px;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -31,6 +31,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
 }
 
 .controllerMainDiv span {
@@ -43,24 +44,32 @@
 .controllerMainDiv>div.scaleGroup {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 6px;
+}
+
+.controllerMainDiv .groupHeading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
 }
 
 .controllerFieldRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
 .controllerFieldRow span {
-  min-width: 60px;
+  min-width: 0;
 }
 
 .controllerFieldRow .xPosition,
 .controllerFieldRow .yPosition,
 .controllerFieldRow .xScale,
 .controllerFieldRow .yScale {
-  flex: 0.5;
+  width: 100%;
   min-width: 0;
 }
 
@@ -73,7 +82,8 @@
 .yPosition,
 .xScale,
 .yScale {
-  min-width: 85px;
+  width: 100%;
+  min-width: 0;
   padding: 6px 8px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -108,7 +118,7 @@
 }
 
 .alphaInput {
-  width: 76px;
+  width: 72px;
   padding: 6px 8px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
