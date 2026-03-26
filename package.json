@@ -1,6 +1,6 @@
 {
-  "name": "ts-template-setup",
-  "version": "1.0.0",
+  "name": "spine-viewer",
+  "version": "3.1.0",
   "description": "",
   "main": "index.js",
   "type": "module",
