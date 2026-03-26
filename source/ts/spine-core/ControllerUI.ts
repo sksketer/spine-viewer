@@ -39,8 +39,7 @@ export class ControllerUI {
     this.version();
     this.animations();
     this.playOrPauseAnimation();
-    this.looping();
-    this.visibility();
+    this.toggleOptions();
     this.alpha();
     this.animationSpeed();
     this.positions();
@@ -90,8 +89,12 @@ export class ControllerUI {
     this.animationSelect = animationSelect;
   }
 
-  looping(): void {
+  toggleOptions(): void {
+    const togglesDiv = document.createElement('div');
+    togglesDiv.classList.add("toggleOptionsRow");
+
     const loopDiv = document.createElement('div');
+    loopDiv.classList.add("toggleOption");
     const loopLabel = document.createElement('span');
     loopLabel.textContent = "Loop: ";
     loopDiv.appendChild(loopLabel);
@@ -99,12 +102,10 @@ export class ControllerUI {
     loopCheckbox.type = "checkbox";
     loopCheckbox.classList.add("loopCheckbox");
     loopDiv.appendChild(loopCheckbox);
-    this.mainDiv.appendChild(loopDiv);
-    this.loopCheckbox = loopCheckbox;
-  }
+    togglesDiv.appendChild(loopDiv);
 
-  visibility(): void {
     const visibilityDiv = document.createElement('div');
+    visibilityDiv.classList.add("toggleOption");
     const visibilityLabel = document.createElement('span');
     visibilityLabel.textContent = "Visible: ";
     visibilityDiv.appendChild(visibilityLabel);
@@ -113,7 +114,11 @@ export class ControllerUI {
     visibilityCheckbox.checked = true;
     visibilityCheckbox.classList.add("visibilityCheckbox");
     visibilityDiv.appendChild(visibilityCheckbox);
-    this.mainDiv.appendChild(visibilityDiv);
+
+    togglesDiv.appendChild(visibilityDiv);
+    this.mainDiv.appendChild(togglesDiv);
+
+    this.loopCheckbox = loopCheckbox;
     this.visibilityCheckbox = visibilityCheckbox;
   }
 
