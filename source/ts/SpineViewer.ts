@@ -48,7 +48,7 @@ export class SpineViewer {
     }
 
     e.preventDefault();
-    const currentScale = this.activeSpine.scale.x;
+    const currentScale = Math.round(this.activeSpine.scale.x * 100) / 100;
     const nextScale = Math.max(0.1, Math.min(10, currentScale - e.deltaY * 0.0015));
     this.activeSpine.scale.set(nextScale);
   };

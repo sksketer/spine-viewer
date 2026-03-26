@@ -59,8 +59,9 @@ body {
   display: none;
   position: fixed;
   margin: 10px;
-  width: 250px;
-
+  width: min(250px, calc(100vw - 20px));
+  max-width: calc(100vw - 20px);
+  overflow: hidden;
   border: 1px solid #d5dae0;
   border-radius: 10px;
   background: linear-gradient(180deg, #626262 0%, #1a1a1a 100%);

@@ -58,8 +58,11 @@ export class SpineController {
     this.bindLoopHandler();
     this.bindVisibilityHandler();
     this.bindAlphaHandler();
+    this.bindAnimationSpeedHandler();
     this.bindPositionHandler();
     this.bindScaleHandler();
+    this.bindResetPositionHandler();
+    this.bindResetScaleHandler();
     this.bindAnimationStatus();
     this.bindDestroyHandler();
     addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
@@ -118,6 +121,22 @@ export class SpineController {
     });
   }
 
+  private bindAnimationSpeedHandler(): void {
+    const speedInput = this.uiCreator.getAnimationSpeedInput();
+    speedInput.value = this.spine.state.timeScale.toString();
+    speedInput.addEventListener("input", (e) => {
+      const target = e.target as HTMLInputElement;
+      const speed = Math.round(Number.parseFloat(target.value) * 10) / 10;
+      this.spine.state.timeScale = speed;
+      this.updateAnimationSpeedLabel(speed);
+    });
+  }
+
+  private updateAnimationSpeedLabel(speed: number): void {
+    const speedValueLabel = this.uiCreator.getAnimationSpeedValueLabel();
+    speedValueLabel.textContent = `${speed}x`;
+  }
+
   private bindPositionHandler(): void {
     const xPositionInput = this.uiCreator.getXPositionInput();
     xPositionInput.addEventListener("input", (e) => {
@@ -139,8 +158,8 @@ export class SpineController {
   private updatePositionInputs(): void {
     const xPositionInput = this.uiCreator.getXPositionInput();
     const yPositionInput = this.uiCreator.getYPositionInput();
-    xPositionInput.value = this.spine.x.toString();
-    yPositionInput.value = this.spine.y.toString();
+    xPositionInput.value = this.spine.x.toFixed(2);
+    yPositionInput.value = this.spine.y.toFixed(2);
   }
 
   private bindScaleHandler(): void {
@@ -165,8 +184,28 @@ export class SpineController {
   private updateScaleInputs(): void {
     const scaleXInput = this.uiCreator.getXScaleInput();
     const scaleYInput = this.uiCreator.getYScaleInput();
-    scaleXInput.value = this.spine.scale.x.toString();
-    scaleYInput.value = this.spine.scale.y.toString();
+    scaleXInput.value = this.spine.scale.x.toFixed(2);
+    scaleYInput.value = this.spine.scale.y.toFixed(2);
+  }
+
+  private bindResetPositionHandler(): void {
+    const resetPositionButton = this.uiCreator.getResetPositionButton();
+    resetPositionButton.addEventListener("click", () => {
+      const app = (globalThis as any).__PIXI_APP__;
+      const centerX = app.canvas.width / 2;
+      const centerY = app.canvas.height / 2;
+      this.spine.x = centerX;
+      this.spine.y = centerY;
+      this.updatePositionInputs();
+    });
+  }
+
+  private bindResetScaleHandler(): void {
+    const resetScaleButton = this.uiCreator.getResetScaleButton();
+    resetScaleButton.addEventListener("click", () => {
+      this.spine.scale.set(1, 1);
+      this.updateScaleInputs();
+    });
   }
 
   private bindAnimationStatus(): void {

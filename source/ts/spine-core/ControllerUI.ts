@@ -14,11 +14,15 @@ export class ControllerUI {
   private loopCheckbox: HTMLInputElement;
   private visibilityCheckbox: HTMLInputElement;
   private alphaInput: HTMLInputElement;
+  private animationSpeedInput: HTMLInputElement;
+  private animationSpeedValueLabel: HTMLSpanElement;
   private destroyButton: HTMLButtonElement;
   private xPositionInput: HTMLInputElement;
   private yPositionInput: HTMLInputElement;
   private xScaleInput: HTMLInputElement;
   private yScaleInput: HTMLInputElement;
+  private resetPositionButton: HTMLButtonElement;
+  private resetScaleButton: HTMLButtonElement;
 
   constructor(spineRef: SVSpine, animationNames: Array<string>, parentDiv?: HTMLDivElement | string) {
     this.spineRef = spineRef;
@@ -37,9 +41,9 @@ export class ControllerUI {
     this.version();
     this.animations();
     this.playOrPauseAnimation();
-    this.looping();
-    this.visibility();
+    this.toggleOptions();
     this.alpha();
+    this.animationSpeed();
     this.positions();
     this.scales();
     this.destroy();
@@ -87,8 +91,12 @@ export class ControllerUI {
     this.animationSelect = animationSelect;
   }
 
-  looping(): void {
+  toggleOptions(): void {
+    const togglesDiv = document.createElement('div');
+    togglesDiv.classList.add("toggleOptionsRow");
+
     const loopDiv = document.createElement('div');
+    loopDiv.classList.add("toggleOption");
     const loopLabel = document.createElement('span');
     loopLabel.textContent = "Loop: ";
     loopDiv.appendChild(loopLabel);
@@ -96,12 +104,10 @@ export class ControllerUI {
     loopCheckbox.type = "checkbox";
     loopCheckbox.classList.add("loopCheckbox");
     loopDiv.appendChild(loopCheckbox);
-    this.mainDiv.appendChild(loopDiv);
-    this.loopCheckbox = loopCheckbox;
-  }
+    togglesDiv.appendChild(loopDiv);
 
-  visibility(): void {
     const visibilityDiv = document.createElement('div');
+    visibilityDiv.classList.add("toggleOption");
     const visibilityLabel = document.createElement('span');
     visibilityLabel.textContent = "Visible: ";
     visibilityDiv.appendChild(visibilityLabel);
@@ -110,7 +116,11 @@ export class ControllerUI {
     visibilityCheckbox.checked = true;
     visibilityCheckbox.classList.add("visibilityCheckbox");
     visibilityDiv.appendChild(visibilityCheckbox);
-    this.mainDiv.appendChild(visibilityDiv);
+
+    togglesDiv.appendChild(visibilityDiv);
+    this.mainDiv.appendChild(togglesDiv);
+
+    this.loopCheckbox = loopCheckbox;
     this.visibilityCheckbox = visibilityCheckbox;
   }
 
@@ -131,9 +141,36 @@ export class ControllerUI {
     this.alphaInput = alphaInput;
   }
 
+  animationSpeed(): void {
+    const speedDiv = document.createElement('div');
+    const speedLabel = document.createElement('span');
+    speedLabel.textContent = "Animation Speed: ";
+    speedDiv.appendChild(speedLabel);
+    const speedInput = document.createElement('input');
+    speedInput.type = "range";
+    speedInput.min = "0.1";
+    speedInput.step = "0.1";
+    speedInput.value = "1";
+    speedInput.max = "5";
+    speedInput.classList.add("animationSpeedInput");
+    const speedValueLabel = document.createElement('span');
+    speedValueLabel.classList.add("speedValueLabel");
+    speedValueLabel.textContent = "1.0x";
+    speedDiv.appendChild(speedInput);
+    speedDiv.appendChild(speedValueLabel);
+    this.mainDiv.appendChild(speedDiv);
+    this.animationSpeedInput = speedInput;
+    this.animationSpeedValueLabel = speedValueLabel;
+  }
+
   positions(): void {
     const positionDiv = document.createElement('div');
     positionDiv.classList.add("positionGroup");
+
+    const positionHeading = document.createElement("span");
+    positionHeading.classList.add("groupHeading");
+    positionHeading.textContent = "Position";
+    positionDiv.appendChild(positionHeading);
 
     const xRow = document.createElement("div");
     xRow.classList.add("controllerFieldRow");
@@ -155,19 +192,31 @@ export class ControllerUI {
     yRow.appendChild(yInput);
     positionDiv.appendChild(yRow);
 
+    const resetPositionButton = document.createElement('button');
+    resetPositionButton.type = "button";
+    resetPositionButton.classList.add("resetPositionButton");
+    resetPositionButton.textContent = "Reset Position";
+    positionDiv.appendChild(resetPositionButton);
+
     this.mainDiv.appendChild(positionDiv);
     this.xPositionInput = xInput;
     this.yPositionInput = yInput;
+    this.resetPositionButton = resetPositionButton;
   }
 
   scales(): void {
     const scaleDiv = document.createElement('div');
     scaleDiv.classList.add("scaleGroup");
 
+    const scaleHeading = document.createElement("span");
+    scaleHeading.classList.add("groupHeading");
+    scaleHeading.textContent = "Scale";
+    scaleDiv.appendChild(scaleHeading);
+
     const scaleXRow = document.createElement("div");
     scaleXRow.classList.add("controllerFieldRow");
     const xInputLabel = document.createElement('span');
-    xInputLabel.textContent = "Scale X: ";
+    xInputLabel.textContent = "X: ";
     scaleXRow.appendChild(xInputLabel);
     const xInput = document.createElement('input');
     xInput.classList.add("xScale");
@@ -177,16 +226,23 @@ export class ControllerUI {
     const scaleYRow = document.createElement("div");
     scaleYRow.classList.add("controllerFieldRow");
     const yInputLabel = document.createElement('span');
-    yInputLabel.textContent = "Scale Y: ";
+    yInputLabel.textContent = "Y: ";
     scaleYRow.appendChild(yInputLabel);
     const yInput = document.createElement('input');
     yInput.classList.add("yScale");
     scaleYRow.appendChild(yInput);
     scaleDiv.appendChild(scaleYRow);
 
+    const resetScaleButton = document.createElement('button');
+    resetScaleButton.type = "button";
+    resetScaleButton.classList.add("resetScaleButton");
+    resetScaleButton.textContent = "Reset Scale";
+    scaleDiv.appendChild(resetScaleButton);
+
     this.mainDiv.appendChild(scaleDiv);
     this.xScaleInput = xInput;
     this.yScaleInput = yInput;
+    this.resetScaleButton = resetScaleButton;
   }
 
   playOrPauseAnimation(): void {
@@ -235,6 +291,14 @@ export class ControllerUI {
     return this.alphaInput;
   }
 
+  getAnimationSpeedInput(): HTMLInputElement {
+    return this.animationSpeedInput;
+  }
+
+  getAnimationSpeedValueLabel(): HTMLSpanElement {
+    return this.animationSpeedValueLabel;
+  }
+
   getPlayPauseButton(): HTMLButtonElement {
     return this.playPauseButton;
   }
@@ -261,5 +325,13 @@ export class ControllerUI {
 
   getMainDiv(): HTMLDivElement {
     return this.mainDiv;
+  }
+
+  getResetPositionButton(): HTMLButtonElement {
+    return this.resetPositionButton;
+  }
+
+  getResetScaleButton(): HTMLButtonElement {
+    return this.resetScaleButton;
   }
 }
