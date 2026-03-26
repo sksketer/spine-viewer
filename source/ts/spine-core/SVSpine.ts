@@ -44,7 +44,7 @@ export class SVSpine extends Spine {
   updateProperties(spineData: ISVSpineData): void {
     this.setPosition(spineData?.x ?? 0, spineData?.y ?? 0);
     this.setScale(spineData?.scale ?? 1);
-    this.setParent(spineData?.parentContainer ?? (globalThis as any).__PIXI_APP__.stage);
+    this.setParent(spineData?.parentContainer ?? spineViewer.stage?.stage);
     this.label = spineData.label ?? "Unnamed Spine";
   }
 
@@ -67,13 +67,13 @@ export class SVSpine extends Spine {
   }
 
   setPosition(x: number, y: number) {
-    this.xPosition = this.x = x;
-    this.yPosition = this.y = y;
+    this.x = Number(x.toFixed(2));
+    this.y = Number(y.toFixed(2));
   }
 
   setScale(scale: number) {
-    this.scale.set(scale);
-    this.xScale = this.yScale = scale;
+    const fixedScale = Number(scale.toFixed(2));
+    this.scale.set(fixedScale);
   }
 
   setParent(parentContainer: Container): void {
@@ -115,13 +115,13 @@ export class SVSpine extends Spine {
   private startWatching(): void {
     this._tickerFn = this.updateOnChangeProperties.bind(this);
 
-    const ticker: Ticker = (globalThis as any).__PIXI_APP__.ticker;
+    const ticker: Ticker = spineViewer.stage?.ticker;
     ticker.add(this._tickerFn);
   }
 
   // ✅ STOP WATCHING (important for cleanup)
   destroy(options?: any): void {
-    const ticker: Ticker = (globalThis as any).__PIXI_APP__.ticker;
+    const ticker: Ticker = spineViewer.stage?.ticker;
     ticker.remove(this._tickerFn);
     this.removeAllListeners();
 
