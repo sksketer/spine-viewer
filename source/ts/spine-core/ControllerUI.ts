@@ -16,6 +16,7 @@ export class ControllerUI {
   private alphaValueLabel: HTMLSpanElement;
   private animationSpeedInput: HTMLInputElement;
   private animationSpeedValueLabel: HTMLSpanElement;
+  private zIndexSelect: HTMLSelectElement;
   private destroyButton: HTMLButtonElement;
   private resetPositionButton: HTMLButtonElement;
   private resetScaleButton: HTMLButtonElement;
@@ -51,6 +52,7 @@ export class ControllerUI {
     this.alpha();
 
     // Transform Section
+    this.zIndex();
     this.createSectionDivider();
     this.resetButtons();
 
@@ -196,6 +198,40 @@ export class ControllerUI {
     const inputWidth = input.offsetWidth;
     const left = percent * (inputWidth - thumbWidth) + thumbWidth / 2;
     tooltip.style.left = `${left}px`;
+  }
+
+  zIndex(): void {
+    const zIndexDiv = document.createElement('div');
+    zIndexDiv.classList.add('zIndexSection');
+    const zIndexLabel = document.createElement('span');
+    zIndexLabel.classList.add('zIndexLabel');
+    zIndexLabel.textContent = "Z-Index:";
+    zIndexDiv.appendChild(zIndexLabel);
+
+    const zIndexSelect = document.createElement('select');
+    zIndexSelect.classList.add('zIndexSelect');
+    zIndexDiv.appendChild(zIndexSelect);
+
+    this.mainDiv.appendChild(zIndexDiv);
+    this.zIndexSelect = zIndexSelect;
+  }
+
+  updateZIndexOptions(spineLabels: string[], currentIndex: number): void {
+    const select = this.zIndexSelect;
+    select.innerHTML = '';
+
+    spineLabels.forEach((label, index) => {
+      const option = document.createElement('option');
+      option.value = index.toString();
+      option.text = `${index + 1} - ${label === this.spineName ? 'This' : label}`;
+      select.appendChild(option);
+    });
+
+    select.value = currentIndex.toString();
+  }
+
+  getZIndexSelect(): HTMLSelectElement {
+    return this.zIndexSelect;
   }
 
   animationSpeed(): void {
