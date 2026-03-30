@@ -12,8 +12,8 @@ export class ControllerUI {
   private animationSelect: HTMLSelectElement;
   private playPauseButton: HTMLButtonElement;
   private loopCheckbox: HTMLInputElement;
-  private visibilityCheckbox: HTMLInputElement;
   private alphaInput: HTMLInputElement;
+  private alphaValueLabel: HTMLSpanElement;
   private animationSpeedInput: HTMLInputElement;
   private animationSpeedValueLabel: HTMLSpanElement;
   private destroyButton: HTMLButtonElement;
@@ -107,22 +107,9 @@ export class ControllerUI {
     loopDiv.appendChild(loopCheckbox);
     togglesDiv.appendChild(loopDiv);
 
-    const visibilityDiv = document.createElement('div');
-    visibilityDiv.classList.add("toggleOption");
-    const visibilityLabel = document.createElement('span');
-    visibilityLabel.textContent = "Visible: ";
-    visibilityDiv.appendChild(visibilityLabel);
-    const visibilityCheckbox = document.createElement('input');
-    visibilityCheckbox.type = "checkbox";
-    visibilityCheckbox.checked = true;
-    visibilityCheckbox.classList.add("visibilityCheckbox");
-    visibilityDiv.appendChild(visibilityCheckbox);
-
-    togglesDiv.appendChild(visibilityDiv);
     this.mainDiv.appendChild(togglesDiv);
 
     this.loopCheckbox = loopCheckbox;
-    this.visibilityCheckbox = visibilityCheckbox;
   }
 
   alpha(): void {
@@ -131,15 +118,20 @@ export class ControllerUI {
     alphaLabel.textContent = "Alpha: ";
     alphaDiv.appendChild(alphaLabel);
     const alphaInput = document.createElement('input');
-    alphaInput.type = "number";
+    alphaInput.type = "range";
     alphaInput.min = "0";
     alphaInput.max = "1";
     alphaInput.step = "0.05";
     alphaInput.value = "1";
     alphaInput.classList.add("alphaInput");
+    const alphaValueLabel = document.createElement('span');
+    alphaValueLabel.classList.add("alphaValueLabel");
+    alphaValueLabel.textContent = "100%";
     alphaDiv.appendChild(alphaInput);
+    alphaDiv.appendChild(alphaValueLabel);
     this.mainDiv.appendChild(alphaDiv);
     this.alphaInput = alphaInput;
+    this.alphaValueLabel = alphaValueLabel;
   }
 
   animationSpeed(): void {
@@ -284,12 +276,12 @@ export class ControllerUI {
     return this.loopCheckbox;
   }
 
-  getVisibilityCheckbox(): HTMLInputElement {
-    return this.visibilityCheckbox;
-  }
-
   getAlphaInput(): HTMLInputElement {
     return this.alphaInput;
+  }
+
+  getAlphaValueLabel(): HTMLSpanElement {
+    return this.alphaValueLabel;
   }
 
   getAnimationSpeedInput(): HTMLInputElement {

@@ -56,7 +56,6 @@ export class SpineController {
   private bindHandlers(): void {
     this.bindAnimationHandler();
     this.bindLoopHandler();
-    this.bindVisibilityHandler();
     this.bindAlphaHandler();
     this.bindAnimationSpeedHandler();
     this.bindPositionHandler();
@@ -109,27 +108,15 @@ export class SpineController {
     });
   }
 
-  private bindVisibilityHandler(): void {
-    const visibilityCheckbox = this.uiCreator.getVisibilityCheckbox();
-    visibilityCheckbox.checked = this.spine.visible;
-    visibilityCheckbox.addEventListener("change", (e) => {
-      const target = e.target as HTMLInputElement;
-      this.spine.visible = target.checked;
-    });
-  }
-
   private bindAlphaHandler(): void {
     const alphaInput = this.uiCreator.getAlphaInput();
-    alphaInput.value = this.spine.alpha.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    const alphaValueLabel = this.uiCreator.getAlphaValueLabel();
+    alphaInput.value = `${this.spine.alpha.toString()}`;
+    alphaValueLabel.textContent = `${(this.spine.alpha * 100).toFixed(0)}%`;
     alphaInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
-      const alphaValue = Number.parseFloat(target.value);
-      if (Number.isNaN(alphaValue)) {
-        return;
-      }
-      const clampedAlpha = Math.max(0, Math.min(1, alphaValue));
-      this.spine.alpha = clampedAlpha;
-      target.value = clampedAlpha.toString();
+      this.spine.alpha = Number.parseFloat(target.value);
+      alphaValueLabel.textContent = `${(this.spine.alpha * 100).toFixed(0)}%`;
     });
   }
 
@@ -148,7 +135,7 @@ export class SpineController {
     speedInput.value = speed.toString();
     this.spine.state.timeScale = speed;
     const speedValueLabel = this.uiCreator.getAnimationSpeedValueLabel();
-    speedValueLabel.textContent = `${speed}x`;
+    speedValueLabel.textContent = `${speed.toFixed(1)}x`;
   }
 
   private bindPositionHandler(): void {
