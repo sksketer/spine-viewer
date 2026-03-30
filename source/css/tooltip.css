@@ -1,0 +1,91 @@
+/* Tooltip Styles */
+.hint-tooltip {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+
+  /* Initial state - hidden off-screen */
+  opacity: 0;
+  transform: translateX(120%);
+}
+
+.hint-tooltip-text {
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hint-tooltip-text::before {
+  content: '💡';
+  font-size: 14px;
+}
+
+.hint-tooltip-separator {
+  color: #64748b;
+  margin: 0 2px;
+}
+
+/* Entry animation - slide in from right */
+.hint-tooltip.slide-in {
+  animation: tooltipSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Exit animation - fade out */
+.hint-tooltip.fade-out {
+  animation: tooltipFadeOut 1s ease-out forwards !important;
+}
+
+@keyframes tooltipSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tooltipFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(0) scale(0.95);
+  }
+}
+
+/* Subtle pulse effect while visible */
+.hint-tooltip.slide-in:not(.fade-out) {
+  animation: tooltipSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    tooltipGlow 2s ease-in-out 0.5s infinite;
+}
+
+@keyframes tooltipGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  50% {
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.2);
+  }
+}
