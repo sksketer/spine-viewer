@@ -2,6 +2,7 @@ import { build, context } from "esbuild";
 import copy from "esbuild-plugin-copy";
 
 const isWatch = process.argv.includes("--watch");
+const isProd = process.argv.includes("--prod");
 
 function getTimestamp() {
   const now = new Date();
@@ -15,23 +16,24 @@ const config = {
   target: "es2022",
   format: "esm",
   outfile: "docs/js/index.js",
-  sourcemap: true,
+
+  // ✅ Production optimizations
+  minify: isProd,
+  sourcemap: !isProd,
+  drop: isProd ? ["console", "debugger"] : [],
+  legalComments: "none",
+
+  define: {
+    "process.env.NODE_ENV": `"${isProd ? "production" : "development"}"`
+  },
+
   plugins: [
     copy({
       resolveFrom: "cwd",
       assets: [
-        {
-          from: ["source/index.html"],
-          to: ["docs"]
-        },
-        {
-          from: ["source/css/**/*"],
-          to: ["docs/css"]
-        },
-        {
-          from: ["source/assets/**/*"],
-          to: ["docs/assets"]
-        }
+        { from: ["source/index.html"], to: ["docs"] },
+        { from: ["source/css/**/*"], to: ["docs/css"] },
+        { from: ["source/assets/**/*"], to: ["docs/assets"] }
       ],
       watch: isWatch
     })
@@ -43,7 +45,6 @@ if (isWatch) {
 
   await ctx.watch();
 
-  // ✅ ADD THIS PART
   await ctx.serve({
     servedir: "docs",
     port: 3000

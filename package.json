@@ -1,11 +1,12 @@
 {
-  "name": "spine-viewer",
-  "version": "3.1.0",
+  "name": "spine_viewer",
+  "version": "3.0.1",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "node build.mjs",
+    "debug": "node build.mjs",
+    "build": "node build.mjs --prod",
     "dev": "node build.mjs --watch",
     "type-check": "tsc --noEmit"
   },

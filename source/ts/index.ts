@@ -7,6 +7,7 @@ import { SpineViewer } from "./SpineViewer";
 import { AssetManager } from "./manager/AssetManager";
 import { UIManager } from "./manager/UIManager";
 import { Model } from "./model/Model";
+import { HintTooltip } from "./manager/HintTooltip";
 
 declare global {
   var spineViewer: ISpineViewer;
@@ -26,3 +27,4 @@ const stage = new SpineViewer(stageDIV, { width: model.getCanvasDimensions().w, 
 })();
 
 new UIManager();
+new HintTooltip();
