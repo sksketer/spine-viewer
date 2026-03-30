@@ -77,11 +77,23 @@ export class SpineController {
       const target = e.target as HTMLSelectElement;
       const animationName = target.value;
       this.isPaused = false;
-      this.spine.state.timeScale = 1;
+      this.handleAnimationSpeedChange(1);
+      this.checkAndRemoveSelectAnimationOption();
       this.uiCreator.setPlayPauseState(this.isPaused);
-      this.spine.playAnimation(animationName, this.isLooping);
+      if (this.animationNames.includes(animationName)) {
+        this.spine.playAnimation(animationName, this.isLooping);
+      }
     });
+  }
 
+  private checkAndRemoveSelectAnimationOption(): void {
+    if (this.animationNames.includes("Select Animation")) {
+      const select = this.uiCreator.getAnimationSelect();
+      const optionToRemove = Array.from(select.options).find(option => option.value === "Select Animation");
+      if (optionToRemove) {
+        select.remove(optionToRemove.index);
+      }
+    }
   }
 
   private bindLoopHandler(): void {
@@ -127,12 +139,14 @@ export class SpineController {
     speedInput.addEventListener("input", (e) => {
       const target = e.target as HTMLInputElement;
       const speed = Math.round(Number.parseFloat(target.value) * 10) / 10;
-      this.spine.state.timeScale = speed;
-      this.updateAnimationSpeedLabel(speed);
+      this.handleAnimationSpeedChange(speed);
     });
   }
 
-  private updateAnimationSpeedLabel(speed: number): void {
+  private handleAnimationSpeedChange(speed: number): void {
+    const speedInput = this.uiCreator.getAnimationSpeedInput();
+    speedInput.value = speed.toString();
+    this.spine.state.timeScale = speed;
     const speedValueLabel = this.uiCreator.getAnimationSpeedValueLabel();
     speedValueLabel.textContent = `${speed}x`;
   }

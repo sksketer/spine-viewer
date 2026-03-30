@@ -80,6 +80,7 @@ export class ControllerUI {
     animationDiv.appendChild(heading);
     const animationSelect = document.createElement('select');
     animationSelect.classList.add("animationSelect");
+    this.animationNames.unshift("Select Animation");
     this.animationNames.forEach(name => {
       const option = document.createElement("option");
       option.value = name;
