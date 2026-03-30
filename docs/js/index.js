@@ -57192,15 +57192,11 @@ var ControllerUI = class {
   animationSelect;
   playPauseButton;
   loopCheckbox;
-  visibilityCheckbox;
   alphaInput;
+  alphaValueLabel;
   animationSpeedInput;
   animationSpeedValueLabel;
   destroyButton;
-  xPositionInput;
-  yPositionInput;
-  xScaleInput;
-  yScaleInput;
   resetPositionButton;
   resetScaleButton;
   constructor(spineRef, animationNames, parentDiv) {
@@ -57217,14 +57213,23 @@ var ControllerUI = class {
     this.createMainDiv();
     this.nameHolder();
     this.version();
+    this.createSectionDivider();
     this.animations();
+    this.createSectionDivider();
     this.playOrPauseAnimation();
     this.toggleOptions();
-    this.alpha();
     this.animationSpeed();
-    this.positions();
-    this.scales();
+    this.createSectionDivider();
+    this.alpha();
+    this.createSectionDivider();
+    this.resetButtons();
+    this.createSectionDivider();
     this.destroy();
+  }
+  createSectionDivider() {
+    const divider = document.createElement("div");
+    divider.classList.add("sectionDivider");
+    this.mainDiv.appendChild(divider);
   }
   createMainDiv() {
     const mainDiv = document.createElement("div");
@@ -57248,17 +57253,26 @@ var ControllerUI = class {
   }
   animations() {
     const animationDiv = document.createElement("div");
+    animationDiv.classList.add("animationSection");
     const heading = document.createElement("span");
     heading.classList.add("animationHeading");
-    heading.textContent = "Animations: ";
+    heading.textContent = "Animation:";
     animationDiv.appendChild(heading);
     const animationSelect = document.createElement("select");
     animationSelect.classList.add("animationSelect");
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.text = "-- Select Animation --";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    animationSelect.appendChild(placeholderOption);
     this.animationNames.forEach((name) => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.text = name;
-      animationSelect.appendChild(option);
+      if (name !== "Select Animation") {
+        const option = document.createElement("option");
+        option.value = name;
+        option.text = name;
+        animationSelect.appendChild(option);
+      }
     });
     animationDiv.appendChild(animationSelect);
     this.mainDiv.appendChild(animationDiv);
@@ -57277,126 +57291,111 @@ var ControllerUI = class {
     loopCheckbox.classList.add("loopCheckbox");
     loopDiv.appendChild(loopCheckbox);
     togglesDiv.appendChild(loopDiv);
-    const visibilityDiv = document.createElement("div");
-    visibilityDiv.classList.add("toggleOption");
-    const visibilityLabel = document.createElement("span");
-    visibilityLabel.textContent = "Visible: ";
-    visibilityDiv.appendChild(visibilityLabel);
-    const visibilityCheckbox = document.createElement("input");
-    visibilityCheckbox.type = "checkbox";
-    visibilityCheckbox.checked = true;
-    visibilityCheckbox.classList.add("visibilityCheckbox");
-    visibilityDiv.appendChild(visibilityCheckbox);
-    togglesDiv.appendChild(visibilityDiv);
     this.mainDiv.appendChild(togglesDiv);
     this.loopCheckbox = loopCheckbox;
-    this.visibilityCheckbox = visibilityCheckbox;
   }
   alpha() {
     const alphaDiv = document.createElement("div");
+    alphaDiv.classList.add("sliderRow");
     const alphaLabel = document.createElement("span");
-    alphaLabel.textContent = "Alpha: ";
+    alphaLabel.classList.add("sliderLabel");
+    alphaLabel.textContent = "Alpha:";
     alphaDiv.appendChild(alphaLabel);
+    const sliderWrapper = document.createElement("div");
+    sliderWrapper.classList.add("sliderWrapper");
     const alphaInput = document.createElement("input");
-    alphaInput.type = "number";
+    alphaInput.type = "range";
     alphaInput.min = "0";
     alphaInput.max = "1";
     alphaInput.step = "0.05";
     alphaInput.value = "1";
-    alphaInput.classList.add("alphaInput");
-    alphaDiv.appendChild(alphaInput);
+    alphaInput.classList.add("alphaInput", "sliderInput");
+    const tooltip = document.createElement("div");
+    tooltip.classList.add("sliderTooltip");
+    tooltip.textContent = "100%";
+    sliderWrapper.appendChild(alphaInput);
+    sliderWrapper.appendChild(tooltip);
+    alphaDiv.appendChild(sliderWrapper);
+    const alphaValueLabel = document.createElement("span");
+    alphaValueLabel.classList.add("alphaValueLabel", "sliderValue");
+    alphaValueLabel.textContent = "100%";
+    alphaDiv.appendChild(alphaValueLabel);
+    alphaInput.addEventListener("input", () => {
+      const val = Number.parseFloat(alphaInput.value);
+      const percent = Math.round(val * 100);
+      tooltip.textContent = `${percent}%`;
+      this.updateTooltipPosition(alphaInput, tooltip);
+    });
+    alphaInput.addEventListener("mousedown", () => tooltip.classList.add("visible"));
+    alphaInput.addEventListener("mouseup", () => tooltip.classList.remove("visible"));
+    alphaInput.addEventListener("mouseleave", () => tooltip.classList.remove("visible"));
     this.mainDiv.appendChild(alphaDiv);
     this.alphaInput = alphaInput;
+    this.alphaValueLabel = alphaValueLabel;
+  }
+  updateTooltipPosition(input, tooltip) {
+    const min = Number.parseFloat(input.min);
+    const max = Number.parseFloat(input.max);
+    const val = Number.parseFloat(input.value);
+    const percent = (val - min) / (max - min);
+    const thumbWidth = 16;
+    const inputWidth = input.offsetWidth;
+    const left = percent * (inputWidth - thumbWidth) + thumbWidth / 2;
+    tooltip.style.left = `${left}px`;
   }
   animationSpeed() {
     const speedDiv = document.createElement("div");
+    speedDiv.classList.add("sliderRow");
     const speedLabel = document.createElement("span");
-    speedLabel.textContent = "Animation Speed: ";
+    speedLabel.classList.add("sliderLabel");
+    speedLabel.textContent = "Speed:";
     speedDiv.appendChild(speedLabel);
+    const sliderWrapper = document.createElement("div");
+    sliderWrapper.classList.add("sliderWrapper");
     const speedInput = document.createElement("input");
     speedInput.type = "range";
     speedInput.min = "0.1";
     speedInput.step = "0.1";
     speedInput.value = "1";
     speedInput.max = "5";
-    speedInput.classList.add("animationSpeedInput");
+    speedInput.classList.add("animationSpeedInput", "sliderInput");
+    const tooltip = document.createElement("div");
+    tooltip.classList.add("sliderTooltip");
+    tooltip.textContent = "1.0x";
+    sliderWrapper.appendChild(speedInput);
+    sliderWrapper.appendChild(tooltip);
+    speedDiv.appendChild(sliderWrapper);
     const speedValueLabel = document.createElement("span");
-    speedValueLabel.classList.add("speedValueLabel");
+    speedValueLabel.classList.add("speedValueLabel", "sliderValue");
     speedValueLabel.textContent = "1.0x";
-    speedDiv.appendChild(speedInput);
     speedDiv.appendChild(speedValueLabel);
+    speedInput.addEventListener("input", () => {
+      const val = Number.parseFloat(speedInput.value);
+      tooltip.textContent = `${val.toFixed(1)}x`;
+      this.updateTooltipPosition(speedInput, tooltip);
+    });
+    speedInput.addEventListener("mousedown", () => tooltip.classList.add("visible"));
+    speedInput.addEventListener("mouseup", () => tooltip.classList.remove("visible"));
+    speedInput.addEventListener("mouseleave", () => tooltip.classList.remove("visible"));
     this.mainDiv.appendChild(speedDiv);
     this.animationSpeedInput = speedInput;
     this.animationSpeedValueLabel = speedValueLabel;
   }
-  positions() {
-    const positionDiv = document.createElement("div");
-    positionDiv.classList.add("positionGroup");
-    const positionHeading = document.createElement("span");
-    positionHeading.classList.add("groupHeading");
-    positionHeading.textContent = "Position";
-    positionDiv.appendChild(positionHeading);
-    const xRow = document.createElement("div");
-    xRow.classList.add("controllerFieldRow");
-    const xInputLabel = document.createElement("span");
-    xInputLabel.textContent = "X: ";
-    xRow.appendChild(xInputLabel);
-    const xInput = document.createElement("input");
-    xInput.classList.add("xPosition");
-    xRow.appendChild(xInput);
-    positionDiv.appendChild(xRow);
-    const yRow = document.createElement("div");
-    yRow.classList.add("controllerFieldRow");
-    const yInputLabel = document.createElement("span");
-    yInputLabel.textContent = "Y: ";
-    yRow.appendChild(yInputLabel);
-    const yInput = document.createElement("input");
-    yInput.classList.add("yPosition");
-    yRow.appendChild(yInput);
-    positionDiv.appendChild(yRow);
+  resetButtons() {
+    const resetDiv = document.createElement("div");
+    resetDiv.classList.add("resetButtonsRow");
     const resetPositionButton = document.createElement("button");
     resetPositionButton.type = "button";
     resetPositionButton.classList.add("resetPositionButton");
     resetPositionButton.textContent = "Reset Position";
-    positionDiv.appendChild(resetPositionButton);
-    this.mainDiv.appendChild(positionDiv);
-    this.xPositionInput = xInput;
-    this.yPositionInput = yInput;
-    this.resetPositionButton = resetPositionButton;
-  }
-  scales() {
-    const scaleDiv = document.createElement("div");
-    scaleDiv.classList.add("scaleGroup");
-    const scaleHeading = document.createElement("span");
-    scaleHeading.classList.add("groupHeading");
-    scaleHeading.textContent = "Scale";
-    scaleDiv.appendChild(scaleHeading);
-    const scaleXRow = document.createElement("div");
-    scaleXRow.classList.add("controllerFieldRow");
-    const xInputLabel = document.createElement("span");
-    xInputLabel.textContent = "X: ";
-    scaleXRow.appendChild(xInputLabel);
-    const xInput = document.createElement("input");
-    xInput.classList.add("xScale");
-    scaleXRow.appendChild(xInput);
-    scaleDiv.appendChild(scaleXRow);
-    const scaleYRow = document.createElement("div");
-    scaleYRow.classList.add("controllerFieldRow");
-    const yInputLabel = document.createElement("span");
-    yInputLabel.textContent = "Y: ";
-    scaleYRow.appendChild(yInputLabel);
-    const yInput = document.createElement("input");
-    yInput.classList.add("yScale");
-    scaleYRow.appendChild(yInput);
-    scaleDiv.appendChild(scaleYRow);
+    resetDiv.appendChild(resetPositionButton);
     const resetScaleButton = document.createElement("button");
     resetScaleButton.type = "button";
     resetScaleButton.classList.add("resetScaleButton");
     resetScaleButton.textContent = "Reset Scale";
-    scaleDiv.appendChild(resetScaleButton);
-    this.mainDiv.appendChild(scaleDiv);
-    this.xScaleInput = xInput;
-    this.yScaleInput = yInput;
+    resetDiv.appendChild(resetScaleButton);
+    this.mainDiv.appendChild(resetDiv);
+    this.resetPositionButton = resetPositionButton;
     this.resetScaleButton = resetScaleButton;
   }
   playOrPauseAnimation() {
@@ -57411,10 +57410,22 @@ var ControllerUI = class {
   }
   destroy() {
     const destroyDiv = document.createElement("div");
+    destroyDiv.classList.add("destroySection");
     const button = document.createElement("button");
     button.classList.add("destroyButton");
     button.type = "button";
     button.textContent = "Destroy";
+    button.addEventListener("click", (e2) => {
+      if (!button.classList.contains("confirm-mode")) {
+        e2.stopImmediatePropagation();
+        button.classList.add("confirm-mode");
+        button.textContent = "Click to Confirm";
+        setTimeout(() => {
+          button.classList.remove("confirm-mode");
+          button.textContent = "Destroy";
+        }, 3e3);
+      }
+    }, true);
     destroyDiv.appendChild(button);
     this.mainDiv.appendChild(destroyDiv);
     this.destroyButton = button;
@@ -57431,11 +57442,11 @@ var ControllerUI = class {
   getLoopCheckbox() {
     return this.loopCheckbox;
   }
-  getVisibilityCheckbox() {
-    return this.visibilityCheckbox;
-  }
   getAlphaInput() {
     return this.alphaInput;
+  }
+  getAlphaValueLabel() {
+    return this.alphaValueLabel;
   }
   getAnimationSpeedInput() {
     return this.animationSpeedInput;
@@ -57448,18 +57459,6 @@ var ControllerUI = class {
   }
   getDestroyButton() {
     return this.destroyButton;
-  }
-  getXPositionInput() {
-    return this.xPositionInput;
-  }
-  getYPositionInput() {
-    return this.yPositionInput;
-  }
-  getXScaleInput() {
-    return this.xScaleInput;
-  }
-  getYScaleInput() {
-    return this.yScaleInput;
   }
   getMainDiv() {
     return this.mainDiv;
@@ -57479,20 +57478,6 @@ var SpineController = class {
   isLooping = void 0;
   isPaused = false;
   uiCreator;
-  onPositionUpdated = (e2) => {
-    const detail = e2.detail;
-    if (detail?.spine !== this.spine) {
-      return;
-    }
-    this.updatePositionInputs();
-  };
-  onScaleUpdated = (e2) => {
-    const detail = e2.detail;
-    if (detail?.spine !== this.spine) {
-      return;
-    }
-    this.updateScaleInputs();
-  };
   onToggleVisibility = (e2) => {
     const detail = e2.detail;
     if (detail?.spine !== this.spine) {
@@ -57521,17 +57506,12 @@ var SpineController = class {
   bindHandlers() {
     this.bindAnimationHandler();
     this.bindLoopHandler();
-    this.bindVisibilityHandler();
     this.bindAlphaHandler();
     this.bindAnimationSpeedHandler();
-    this.bindPositionHandler();
-    this.bindScaleHandler();
     this.bindResetPositionHandler();
     this.bindResetScaleHandler();
     this.bindAnimationStatus();
     this.bindDestroyHandler();
-    addEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
-    addEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
     addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
     addEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
   }
@@ -57541,10 +57521,22 @@ var SpineController = class {
       const target = e2.target;
       const animationName = target.value;
       this.isPaused = false;
-      this.spine.state.timeScale = 1;
+      this.handleAnimationSpeedChange(1);
+      this.checkAndRemoveSelectAnimationOption();
       this.uiCreator.setPlayPauseState(this.isPaused);
-      this.spine.playAnimation(animationName, this.isLooping);
+      if (this.animationNames.includes(animationName)) {
+        this.spine.playAnimation(animationName, this.isLooping);
+      }
     });
+  }
+  checkAndRemoveSelectAnimationOption() {
+    if (this.animationNames.includes("Select Animation")) {
+      const select = this.uiCreator.getAnimationSelect();
+      const optionToRemove = Array.from(select.options).find((option) => option.value === "Select Animation");
+      if (optionToRemove) {
+        select.remove(optionToRemove.index);
+      }
+    }
   }
   bindLoopHandler() {
     const loopButton = this.uiCreator.getLoopCheckbox();
@@ -57558,26 +57550,15 @@ var SpineController = class {
       }
     });
   }
-  bindVisibilityHandler() {
-    const visibilityCheckbox = this.uiCreator.getVisibilityCheckbox();
-    visibilityCheckbox.checked = this.spine.visible;
-    visibilityCheckbox.addEventListener("change", (e2) => {
-      const target = e2.target;
-      this.spine.visible = target.checked;
-    });
-  }
   bindAlphaHandler() {
     const alphaInput = this.uiCreator.getAlphaInput();
-    alphaInput.value = this.spine.alpha.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    const alphaValueLabel = this.uiCreator.getAlphaValueLabel();
+    alphaInput.value = `${this.spine.alpha.toString()}`;
+    alphaValueLabel.textContent = `${(this.spine.alpha * 100).toFixed(0)}%`;
     alphaInput.addEventListener("input", (e2) => {
       const target = e2.target;
-      const alphaValue = Number.parseFloat(target.value);
-      if (Number.isNaN(alphaValue)) {
-        return;
-      }
-      const clampedAlpha = Math.max(0, Math.min(1, alphaValue));
-      this.spine.alpha = clampedAlpha;
-      target.value = clampedAlpha.toString();
+      this.spine.alpha = Number.parseFloat(target.value);
+      alphaValueLabel.textContent = `${(this.spine.alpha * 100).toFixed(0)}%`;
     });
   }
   bindAnimationSpeedHandler() {
@@ -57586,55 +57567,15 @@ var SpineController = class {
     speedInput.addEventListener("input", (e2) => {
       const target = e2.target;
       const speed = Math.round(Number.parseFloat(target.value) * 10) / 10;
-      this.spine.state.timeScale = speed;
-      this.updateAnimationSpeedLabel(speed);
+      this.handleAnimationSpeedChange(speed);
     });
   }
-  updateAnimationSpeedLabel(speed) {
+  handleAnimationSpeedChange(speed) {
+    const speedInput = this.uiCreator.getAnimationSpeedInput();
+    speedInput.value = speed.toString();
+    this.spine.state.timeScale = speed;
     const speedValueLabel = this.uiCreator.getAnimationSpeedValueLabel();
-    speedValueLabel.textContent = `${speed}x`;
-  }
-  bindPositionHandler() {
-    const xPositionInput = this.uiCreator.getXPositionInput();
-    xPositionInput.addEventListener("input", (e2) => {
-      const target = e2.target;
-      const x2 = Number.parseFloat(target.value) || 0;
-      this.spine.x = x2;
-    });
-    const yPositionInput = this.uiCreator.getYPositionInput();
-    yPositionInput.addEventListener("input", (e2) => {
-      const target = e2.target;
-      const y2 = Number.parseFloat(target.value) || 0;
-      this.spine.y = y2;
-    });
-    this.updatePositionInputs();
-  }
-  updatePositionInputs() {
-    const xPositionInput = this.uiCreator.getXPositionInput();
-    const yPositionInput = this.uiCreator.getYPositionInput();
-    xPositionInput.value = this.spine.x.toFixed(2);
-    yPositionInput.value = this.spine.y.toFixed(2);
-  }
-  bindScaleHandler() {
-    const scaleXInput = this.uiCreator.getXScaleInput();
-    const scaleYInput = this.uiCreator.getYScaleInput();
-    scaleXInput.addEventListener("input", (e2) => {
-      const target = e2.target;
-      const scaleX = Number.parseFloat(target.value) || 1;
-      this.spine.scale.set(scaleX, this.spine.scale.y);
-    });
-    scaleYInput.addEventListener("input", (e2) => {
-      const target = e2.target;
-      const scaleY = Number.parseFloat(target.value) || 1;
-      this.spine.scale.set(this.spine.scale.x, scaleY);
-    });
-    this.updateScaleInputs();
-  }
-  updateScaleInputs() {
-    const scaleXInput = this.uiCreator.getXScaleInput();
-    const scaleYInput = this.uiCreator.getYScaleInput();
-    scaleXInput.value = this.spine.scale.x.toFixed(2);
-    scaleYInput.value = this.spine.scale.y.toFixed(2);
+    speedValueLabel.textContent = `${speed.toFixed(1)}x`;
   }
   bindResetPositionHandler() {
     const resetPositionButton = this.uiCreator.getResetPositionButton();
@@ -57644,14 +57585,12 @@ var SpineController = class {
       const centerY = app.canvas.height / 2;
       this.spine.x = centerX;
       this.spine.y = centerY;
-      this.updatePositionInputs();
     });
   }
   bindResetScaleHandler() {
     const resetScaleButton = this.uiCreator.getResetScaleButton();
     resetScaleButton.addEventListener("click", () => {
       this.spine.scale.set(1, 1);
-      this.updateScaleInputs();
     });
   }
   bindAnimationStatus() {
@@ -57672,8 +57611,6 @@ var SpineController = class {
     });
   }
   dispose() {
-    removeEventListener("SPINE_POSITION_UPDATED", this.onPositionUpdated);
-    removeEventListener("SPINE_SCALE_UPDATED", this.onScaleUpdated);
     removeEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
     removeEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
     this.uiCreator.getMainDiv().remove();
@@ -58274,6 +58211,94 @@ var Model = class {
   }
 };
 
+// source/ts/manager/HintTooltip.ts
+var HintTooltip = class {
+  tooltipElement;
+  DISPLAY_DURATION = 3e3;
+  // 3 seconds
+  IDLE_THRESHOLD = 12e4;
+  // 2 minutes
+  idleTimer = null;
+  hideTimer = null;
+  isVisible = false;
+  isFirstLoad = false;
+  lastActivityTime = Date.now();
+  constructor() {
+    this.tooltipElement = this.createTooltipElement();
+    document.body.appendChild(this.tooltipElement);
+    this.bindEvents();
+  }
+  bindEvents() {
+    addEventListener("spineAssetsLoaded", () => {
+      if (!this.isFirstLoad) {
+        this.isFirstLoad = true;
+        this.show();
+        this.setupIdleDetection();
+      }
+    });
+  }
+  createTooltipElement() {
+    const tooltip = document.createElement("div");
+    tooltip.classList.add("hint-tooltip");
+    tooltip.id = "hint-tooltip";
+    const textSpan = document.createElement("span");
+    textSpan.classList.add("hint-tooltip-text");
+    textSpan.innerHTML = `Tip: Drag to reposition <span class="hint-tooltip-separator">\u2022</span> Ctrl + Scroll to zoom`;
+    tooltip.appendChild(textSpan);
+    return tooltip;
+  }
+  setupIdleDetection() {
+    const activityEvents = ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "wheel"];
+    const resetIdleTimer = () => {
+      this.lastActivityTime = Date.now();
+      if (this.idleTimer) {
+        clearTimeout(this.idleTimer);
+      }
+      this.idleTimer = setTimeout(() => {
+        this.onIdle();
+      }, this.IDLE_THRESHOLD);
+    };
+    activityEvents.forEach((event) => {
+      document.addEventListener(event, resetIdleTimer, { passive: true });
+    });
+    resetIdleTimer();
+  }
+  onIdle() {
+    if (!this.isVisible) {
+      this.show();
+    }
+  }
+  show() {
+    if (this.isVisible) return;
+    this.isVisible = true;
+    this.tooltipElement.classList.remove("fade-out");
+    this.tooltipElement.classList.add("slide-in");
+    if (this.hideTimer) {
+      clearTimeout(this.hideTimer);
+    }
+    this.hideTimer = setTimeout(() => {
+      this.hide();
+    }, this.DISPLAY_DURATION);
+  }
+  hide() {
+    if (!this.isVisible) return;
+    this.tooltipElement.classList.add("fade-out");
+    setTimeout(() => {
+      this.tooltipElement.classList.remove("slide-in");
+      this.isVisible = false;
+    }, 1e3);
+  }
+  destroy() {
+    if (this.idleTimer) {
+      clearTimeout(this.idleTimer);
+    }
+    if (this.hideTimer) {
+      clearTimeout(this.hideTimer);
+    }
+    this.tooltipElement.remove();
+  }
+};
+
 // source/ts/index.ts
 console.log("setup ready!");
 var stageDIV = document.getElementById("stage") ?? document.body;
@@ -58288,15 +58313,5 @@ var stage = new SpineViewer(stageDIV, { width: model.getCanvasDimensions().w, he
   };
 })();
 new UIManager();
-/*! Bundled license information:
-
-tiny-lru/dist/tiny-lru.js:
-  (**
-   * tiny-lru
-   *
-   * @copyright 2026 Jason Mulligan <jason.mulligan@avoidwork.com>
-   * @license BSD-3-Clause
-   * @version 11.4.7
-   *)
-*/
+new HintTooltip();
 //# sourceMappingURL=index.js.map
