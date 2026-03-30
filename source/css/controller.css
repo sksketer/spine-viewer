@@ -40,39 +40,6 @@
   font-weight: 600;
 }
 
-.controllerMainDiv>div.positionGroup,
-.controllerMainDiv>div.scaleGroup {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-}
-
-.controllerMainDiv .groupHeading {
-  font-size: 13px;
-  font-weight: 700;
-  color: #e2e8f0;
-}
-
-.controllerFieldRow {
-  display: grid;
-  grid-template-columns: 60px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.controllerFieldRow span {
-  min-width: 0;
-}
-
-.controllerFieldRow .xPosition,
-.controllerFieldRow .yPosition,
-.controllerFieldRow .xScale,
-.controllerFieldRow .yScale {
-  width: 100%;
-  min-width: 0;
-}
-
 .toggleOptionsRow {
   justify-content: flex-start;
   gap: 14px;
@@ -88,11 +55,7 @@
   min-width: 80px;
 }
 
-.animationSelect,
-.xPosition,
-.yPosition,
-.xScale,
-.yScale {
+.animationSelect {
   width: 100%;
   min-width: 0;
   padding: 6px 8px;
@@ -105,11 +68,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.animationSelect:focus,
-.xPosition:focus,
-.yPosition:focus,
-.xScale:focus,
-.yScale:focus {
+.animationSelect:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
@@ -170,11 +129,15 @@
   filter: brightness(1.05);
 }
 
+.resetButtonsRow {
+  display: flex;
+  gap: 8px;
+}
+
 .resetPositionButton,
 .resetScaleButton {
-  width: 100%;
+  flex: 1;
   padding: 6px 10px;
-  margin-top: 4px;
   border: 1px solid #94a3b8;
   border-radius: 6px;
   background: linear-gradient(180deg, #64748b 0%, #475569 100%);
