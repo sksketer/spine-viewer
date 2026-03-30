@@ -53,6 +53,7 @@ body {
 .spineStage {
   display: none;
   justify-content: center;
+  margin: 12px 0;
 }
 
 .controllerDiv {

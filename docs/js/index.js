@@ -57196,6 +57196,7 @@ var ControllerUI = class {
   alphaValueLabel;
   animationSpeedInput;
   animationSpeedValueLabel;
+  zIndexSelect;
   destroyButton;
   resetPositionButton;
   resetScaleButton;
@@ -57221,6 +57222,7 @@ var ControllerUI = class {
     this.animationSpeed();
     this.createSectionDivider();
     this.alpha();
+    this.zIndex();
     this.createSectionDivider();
     this.resetButtons();
     this.createSectionDivider();
@@ -57342,6 +57344,33 @@ var ControllerUI = class {
     const inputWidth = input.offsetWidth;
     const left = percent * (inputWidth - thumbWidth) + thumbWidth / 2;
     tooltip.style.left = `${left}px`;
+  }
+  zIndex() {
+    const zIndexDiv = document.createElement("div");
+    zIndexDiv.classList.add("zIndexSection");
+    const zIndexLabel = document.createElement("span");
+    zIndexLabel.classList.add("zIndexLabel");
+    zIndexLabel.textContent = "Z-Index:";
+    zIndexDiv.appendChild(zIndexLabel);
+    const zIndexSelect = document.createElement("select");
+    zIndexSelect.classList.add("zIndexSelect");
+    zIndexDiv.appendChild(zIndexSelect);
+    this.mainDiv.appendChild(zIndexDiv);
+    this.zIndexSelect = zIndexSelect;
+  }
+  updateZIndexOptions(spineLabels, currentIndex) {
+    const select = this.zIndexSelect;
+    select.innerHTML = "";
+    spineLabels.forEach((label, index) => {
+      const option = document.createElement("option");
+      option.value = index.toString();
+      option.text = `${index + 1} - ${label === this.spineName ? "This" : label}`;
+      select.appendChild(option);
+    });
+    select.value = currentIndex.toString();
+  }
+  getZIndexSelect() {
+    return this.zIndexSelect;
   }
   animationSpeed() {
     const speedDiv = document.createElement("div");
@@ -57493,6 +57522,13 @@ var SpineController = class {
     }
     this.dispose();
   };
+  onSpineListChanged = (e2) => {
+    const detail = e2.detail;
+    if (!detail?.spineLabels) {
+      return;
+    }
+    this.updateZIndexOptions(detail.spineLabels);
+  };
   constructor(spine) {
     this.spine = spine;
     this.animationNames = spine.skeleton.data.animations.map((a2) => a2.name);
@@ -57508,12 +57544,14 @@ var SpineController = class {
     this.bindLoopHandler();
     this.bindAlphaHandler();
     this.bindAnimationSpeedHandler();
+    this.bindZIndexHandler();
     this.bindResetPositionHandler();
     this.bindResetScaleHandler();
     this.bindAnimationStatus();
     this.bindDestroyHandler();
     addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
     addEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    addEventListener("SPINE_LIST_CHANGED", this.onSpineListChanged);
   }
   bindAnimationHandler() {
     const select = this.uiCreator.getAnimationSelect();
@@ -57610,9 +57648,26 @@ var SpineController = class {
       }));
     });
   }
+  bindZIndexHandler() {
+    const zIndexSelect = this.uiCreator.getZIndexSelect();
+    zIndexSelect.addEventListener("change", (e2) => {
+      const target = e2.target;
+      const newIndex = Number.parseInt(target.value, 10);
+      dispatchEvent(new CustomEvent("SPINE_ZINDEX_CHANGE", {
+        detail: { spine: this.spine, newIndex }
+      }));
+    });
+  }
+  updateZIndexOptions(spineLabels) {
+    const parent = this.spine.parent;
+    if (!parent) return;
+    const currentIndex = parent.getChildIndex(this.spine);
+    this.uiCreator.updateZIndexOptions(spineLabels, currentIndex);
+  }
   dispose() {
     removeEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
     removeEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    removeEventListener("SPINE_LIST_CHANGED", this.onSpineListChanged);
     this.uiCreator.getMainDiv().remove();
   }
 };
@@ -57782,6 +57837,13 @@ var SpineViewer = class {
     }
     this.destroySpineInstance(detail.spine);
   };
+  onSpineZIndexChange = (e2) => {
+    const detail = e2.detail;
+    if (!detail?.spine || detail.newIndex === void 0) {
+      return;
+    }
+    this.changeSpineZIndex(detail.spine, detail.newIndex);
+  };
   isSpineSelectorBound = false;
   scene;
   constructor(parent, canvasProps) {
@@ -57795,6 +57857,7 @@ var SpineViewer = class {
     });
     addEventListener("SPINE_DESTROY_REQUESTED", this.onSpineDestroyRequested);
     addEventListener("SPINE_SELECTED", this.onSpineSelected);
+    addEventListener("SPINE_ZINDEX_CHANGE", this.onSpineZIndexChange);
   }
   async init() {
     this.stage = new Application();
@@ -57848,6 +57911,18 @@ var SpineViewer = class {
       this.isSpineSelectorBound = true;
     }
     spinesReferences.value = spine.label;
+    this.dispatchSpineListChanged();
+  }
+  dispatchSpineListChanged() {
+    const spineLabels = this.scene.children.map((child) => child.label);
+    dispatchEvent(new CustomEvent("SPINE_LIST_CHANGED", { detail: { spineLabels } }));
+  }
+  changeSpineZIndex(spine, newIndex) {
+    if (!this.scene || newIndex < 0 || newIndex >= this.scene.children.length) {
+      return;
+    }
+    this.scene.setChildIndex(spine, newIndex);
+    this.dispatchSpineListChanged();
   }
   hideAllController() {
     this.spineInstances.forEach((spine) => {
@@ -57875,6 +57950,7 @@ var SpineViewer = class {
     }
     if (this.spineInstances.length === 0) {
       this.activeSpine = void 0;
+      this.dispatchSpineListChanged();
       return;
     }
     spinesReferences.addEventListener("change", this.onSpineSelectorChange);
@@ -57886,6 +57962,7 @@ var SpineViewer = class {
     dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
       detail: { spine: activeSpine, visibility: true }
     }));
+    this.dispatchSpineListChanged();
   }
 };
 
