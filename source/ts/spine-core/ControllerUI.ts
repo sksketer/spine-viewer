@@ -35,13 +35,34 @@ export class ControllerUI {
     this.createMainDiv();
     this.nameHolder();
     this.version();
+
+    // Animation Section
+    this.createSectionDivider();
     this.animations();
+
+    // Playback Section
+    this.createSectionDivider();
     this.playOrPauseAnimation();
     this.toggleOptions();
-    this.alpha();
     this.animationSpeed();
+
+    // Visual Section
+    this.createSectionDivider();
+    this.alpha();
+
+    // Transform Section
+    this.createSectionDivider();
     this.resetButtons();
+
+    // Actions Section
+    this.createSectionDivider();
     this.destroy();
+  }
+
+  createSectionDivider(): void {
+    const divider = document.createElement('div');
+    divider.classList.add('sectionDivider');
+    this.mainDiv.appendChild(divider);
   }
 
   createMainDiv(): void {
@@ -69,18 +90,29 @@ export class ControllerUI {
 
   animations(): void {
     const animationDiv = document.createElement('div');
+    animationDiv.classList.add('animationSection');
     const heading = document.createElement('span');
     heading.classList.add("animationHeading");
-    heading.textContent = "Animations: ";
+    heading.textContent = "Animation:";
     animationDiv.appendChild(heading);
     const animationSelect = document.createElement('select');
     animationSelect.classList.add("animationSelect");
-    this.animationNames.unshift("Select Animation");
+
+    // Add placeholder option
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.text = "-- Select Animation --";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    animationSelect.appendChild(placeholderOption);
+
     this.animationNames.forEach(name => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.text = name;
-      animationSelect.appendChild(option);
+      if (name !== "Select Animation") {
+        const option = document.createElement("option");
+        option.value = name;
+        option.text = name;
+        animationSelect.appendChild(option);
+      }
     });
     animationDiv.appendChild(animationSelect);
     this.mainDiv.appendChild(animationDiv);
@@ -109,43 +141,105 @@ export class ControllerUI {
 
   alpha(): void {
     const alphaDiv = document.createElement('div');
+    alphaDiv.classList.add('sliderRow');
     const alphaLabel = document.createElement('span');
-    alphaLabel.textContent = "Alpha: ";
+    alphaLabel.classList.add('sliderLabel');
+    alphaLabel.textContent = "Alpha:";
     alphaDiv.appendChild(alphaLabel);
+
+    const sliderWrapper = document.createElement('div');
+    sliderWrapper.classList.add('sliderWrapper');
+
     const alphaInput = document.createElement('input');
     alphaInput.type = "range";
     alphaInput.min = "0";
     alphaInput.max = "1";
     alphaInput.step = "0.05";
     alphaInput.value = "1";
-    alphaInput.classList.add("alphaInput");
+    alphaInput.classList.add("alphaInput", "sliderInput");
+
+    const tooltip = document.createElement('div');
+    tooltip.classList.add('sliderTooltip');
+    tooltip.textContent = "100%";
+
+    sliderWrapper.appendChild(alphaInput);
+    sliderWrapper.appendChild(tooltip);
+    alphaDiv.appendChild(sliderWrapper);
+
     const alphaValueLabel = document.createElement('span');
-    alphaValueLabel.classList.add("alphaValueLabel");
+    alphaValueLabel.classList.add("alphaValueLabel", "sliderValue");
     alphaValueLabel.textContent = "100%";
-    alphaDiv.appendChild(alphaInput);
     alphaDiv.appendChild(alphaValueLabel);
+
+    // Tooltip positioning on input
+    alphaInput.addEventListener('input', () => {
+      const val = Number.parseFloat(alphaInput.value);
+      const percent = Math.round(val * 100);
+      tooltip.textContent = `${percent}%`;
+      this.updateTooltipPosition(alphaInput, tooltip);
+    });
+    alphaInput.addEventListener('mousedown', () => tooltip.classList.add('visible'));
+    alphaInput.addEventListener('mouseup', () => tooltip.classList.remove('visible'));
+    alphaInput.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
     this.mainDiv.appendChild(alphaDiv);
     this.alphaInput = alphaInput;
     this.alphaValueLabel = alphaValueLabel;
   }
 
+  private updateTooltipPosition(input: HTMLInputElement, tooltip: HTMLElement): void {
+    const min = Number.parseFloat(input.min);
+    const max = Number.parseFloat(input.max);
+    const val = Number.parseFloat(input.value);
+    const percent = (val - min) / (max - min);
+    const thumbWidth = 16;
+    const inputWidth = input.offsetWidth;
+    const left = percent * (inputWidth - thumbWidth) + thumbWidth / 2;
+    tooltip.style.left = `${left}px`;
+  }
+
   animationSpeed(): void {
     const speedDiv = document.createElement('div');
+    speedDiv.classList.add('sliderRow');
     const speedLabel = document.createElement('span');
-    speedLabel.textContent = "Animation Speed: ";
+    speedLabel.classList.add('sliderLabel');
+    speedLabel.textContent = "Speed:";
     speedDiv.appendChild(speedLabel);
+
+    const sliderWrapper = document.createElement('div');
+    sliderWrapper.classList.add('sliderWrapper');
+
     const speedInput = document.createElement('input');
     speedInput.type = "range";
     speedInput.min = "0.1";
     speedInput.step = "0.1";
     speedInput.value = "1";
     speedInput.max = "5";
-    speedInput.classList.add("animationSpeedInput");
+    speedInput.classList.add("animationSpeedInput", "sliderInput");
+
+    const tooltip = document.createElement('div');
+    tooltip.classList.add('sliderTooltip');
+    tooltip.textContent = "1.0x";
+
+    sliderWrapper.appendChild(speedInput);
+    sliderWrapper.appendChild(tooltip);
+    speedDiv.appendChild(sliderWrapper);
+
     const speedValueLabel = document.createElement('span');
-    speedValueLabel.classList.add("speedValueLabel");
+    speedValueLabel.classList.add("speedValueLabel", "sliderValue");
     speedValueLabel.textContent = "1.0x";
-    speedDiv.appendChild(speedInput);
     speedDiv.appendChild(speedValueLabel);
+
+    // Tooltip positioning on input
+    speedInput.addEventListener('input', () => {
+      const val = Number.parseFloat(speedInput.value);
+      tooltip.textContent = `${val.toFixed(1)}x`;
+      this.updateTooltipPosition(speedInput, tooltip);
+    });
+    speedInput.addEventListener('mousedown', () => tooltip.classList.add('visible'));
+    speedInput.addEventListener('mouseup', () => tooltip.classList.remove('visible'));
+    speedInput.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
     this.mainDiv.appendChild(speedDiv);
     this.animationSpeedInput = speedInput;
     this.animationSpeedValueLabel = speedValueLabel;
@@ -185,10 +279,27 @@ export class ControllerUI {
 
   destroy(): void {
     const destroyDiv = document.createElement("div");
+    destroyDiv.classList.add("destroySection");
     const button = document.createElement("button");
     button.classList.add("destroyButton");
     button.type = "button";
     button.textContent = "Destroy";
+
+    // Add confirmation on click
+    button.addEventListener('click', (e) => {
+      if (!button.classList.contains('confirm-mode')) {
+        e.stopImmediatePropagation();
+        button.classList.add('confirm-mode');
+        button.textContent = "Click to Confirm";
+
+        // Reset after 3 seconds
+        setTimeout(() => {
+          button.classList.remove('confirm-mode');
+          button.textContent = "Destroy";
+        }, 3000);
+      }
+    }, true);
+
     destroyDiv.appendChild(button);
     this.mainDiv.appendChild(destroyDiv);
     this.destroyButton = button;
