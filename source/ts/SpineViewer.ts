@@ -61,6 +61,14 @@ export class SpineViewer {
     this.destroySpineInstance(detail.spine);
   };
 
+  private readonly onSpineZIndexChange = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spine: SVSpine; newIndex: number }>).detail;
+    if (!detail?.spine || detail.newIndex === undefined) {
+      return;
+    }
+    this.changeSpineZIndex(detail.spine, detail.newIndex);
+  };
+
   private isSpineSelectorBound = false;
   private scene: Container;
 
@@ -77,6 +85,7 @@ export class SpineViewer {
 
     addEventListener("SPINE_DESTROY_REQUESTED", this.onSpineDestroyRequested);
     addEventListener("SPINE_SELECTED", this.onSpineSelected);
+    addEventListener("SPINE_ZINDEX_CHANGE", this.onSpineZIndexChange);
   }
 
   async init(): Promise<void> {
@@ -139,7 +148,20 @@ export class SpineViewer {
     }
 
     spinesReferences.value = spine.label;
+    this.dispatchSpineListChanged();
+  }
 
+  private dispatchSpineListChanged(): void {
+    const spineLabels = this.scene.children.map((child) => child.label);
+    dispatchEvent(new CustomEvent("SPINE_LIST_CHANGED", { detail: { spineLabels } }));
+  }
+
+  private changeSpineZIndex(spine: SVSpine, newIndex: number): void {
+    if (!this.scene || newIndex < 0 || newIndex >= this.scene.children.length) {
+      return;
+    }
+    this.scene.setChildIndex(spine, newIndex);
+    this.dispatchSpineListChanged();
   }
 
   private hideAllController(): void {
@@ -174,6 +196,7 @@ export class SpineViewer {
 
     if (this.spineInstances.length === 0) {
       this.activeSpine = undefined;
+      this.dispatchSpineListChanged();
       return;
     }
 
@@ -187,5 +210,6 @@ export class SpineViewer {
     dispatchEvent(new CustomEvent("TOGGLE_SPINE_CONTROLLER_VISIBILITY", {
       detail: { spine: activeSpine, visibility: true }
     }));
+    this.dispatchSpineListChanged();
   }
 }

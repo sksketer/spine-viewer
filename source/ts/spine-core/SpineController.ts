@@ -25,6 +25,14 @@ export class SpineController {
     this.dispose();
   };
 
+  private readonly onSpineListChanged = (e: Event): void => {
+    const detail = (e as CustomEvent<{ spineLabels: string[] }>).detail;
+    if (!detail?.spineLabels) {
+      return;
+    }
+    this.updateZIndexOptions(detail.spineLabels);
+  };
+
   constructor(spine: SVSpine) {
     this.spine = spine;
     this.animationNames = spine.skeleton.data.animations.map((a) => a.name);
@@ -42,12 +50,14 @@ export class SpineController {
     this.bindLoopHandler();
     this.bindAlphaHandler();
     this.bindAnimationSpeedHandler();
+    this.bindZIndexHandler();
     this.bindResetPositionHandler();
     this.bindResetScaleHandler();
     this.bindAnimationStatus();
     this.bindDestroyHandler();
     addEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
     addEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    addEventListener("SPINE_LIST_CHANGED", this.onSpineListChanged);
   }
 
   private bindAnimationHandler(): void {
@@ -156,9 +166,28 @@ export class SpineController {
     });
   }
 
+  private bindZIndexHandler(): void {
+    const zIndexSelect = this.uiCreator.getZIndexSelect();
+    zIndexSelect.addEventListener("change", (e) => {
+      const target = e.target as HTMLSelectElement;
+      const newIndex = Number.parseInt(target.value, 10);
+      dispatchEvent(new CustomEvent("SPINE_ZINDEX_CHANGE", {
+        detail: { spine: this.spine, newIndex }
+      }));
+    });
+  }
+
+  private updateZIndexOptions(spineLabels: string[]): void {
+    const parent = this.spine.parent;
+    if (!parent) return;
+    const currentIndex = parent.getChildIndex(this.spine);
+    this.uiCreator.updateZIndexOptions(spineLabels, currentIndex);
+  }
+
   private dispose(): void {
     removeEventListener("TOGGLE_SPINE_CONTROLLER_VISIBILITY", this.onToggleVisibility);
     removeEventListener("SPINE_DESTROY_REQUESTED", this.onDestroyRequested);
+    removeEventListener("SPINE_LIST_CHANGED", this.onSpineListChanged);
     this.uiCreator.getMainDiv().remove();
   }
 }
